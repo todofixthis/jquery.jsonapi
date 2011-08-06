@@ -25,11 +25,11 @@
 /** Initialization for the sfJwtJsonApiPlugin plugin.
  *
  * @author Phoenix Zerin <phoenix.zerin@jwt.com>
- * 
+ *
  * @package jwt
  * @subpackage plugin.config
  */
-class sfJwtJsonApiPlugin extends sfPluginConfiguration
+class sfJwtJsonApiPluginConfiguration extends sfPluginConfiguration
 {
   public function initialize(  )
   {
