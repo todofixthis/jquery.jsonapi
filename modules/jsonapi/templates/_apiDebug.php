@@ -1,0 +1,1 @@
+<?php echo '<pre>', esc_entities(print_r($result, true)), '</pre>';
