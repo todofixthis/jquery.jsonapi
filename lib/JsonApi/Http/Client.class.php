@@ -113,7 +113,7 @@ abstract class JsonApi_Http_Client
   {
     if( ! $hostname = $this->getHostname() )
     {
-      throw new InvalidArgumentException(
+      throw new JsonApi_Http_Client_Exception(
         'Specify a target hostname for this client before sending requests.'
       );
     }
