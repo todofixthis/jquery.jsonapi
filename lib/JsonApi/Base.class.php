@@ -34,9 +34,6 @@ abstract class JsonApi_Base
     STATUS_OK     = 'OK',
     STATUS_ERROR  = 'ERROR';
 
-  private
-    $_httpClient;
-
   static private
 
     /** @kludge PHP 5.2 does not support late static binding, but we need a way
@@ -50,15 +47,16 @@ abstract class JsonApi_Base
      */
     $_instances = array();
 
-  /** Sets the default HTTP client and hostname.
+  /** Returns the HTTP client for the API call.
    *
    * Most every subclass will `return new JsonApi_Http_Client_Zend($hostname)`,
    *  where $hostname is the hostname of the JsonApi server for that service.
    *
    * @return JsonApi_Http_Client
    */
-  public function getDefaultHttpClient(  )
+  public function getHttpClient(  )
   {
+    return new JsonApi_Http_Client_Zend();
   }
 
   /** Generates/returns an API instance for a given class name.
@@ -85,41 +83,6 @@ abstract class JsonApi_Base
     }
 
     return self::$_instances[$class];
-  }
-
-  /** Accessor for $_httpClient.
-   *
-   * @return JsonApi_Http_Client
-   */
-  public function getHttpClient(  )
-  {
-    if( ! isset($this->_httpClient) )
-    {
-      $this->_httpClient = $this->getDefaultHttpClient();
-    }
-
-    if( ! $this->_httpClient )
-    {
-      throw new JsonApi_Exception(sprintf(
-        'No HTTP client defined for %s!',
-          get_class($this)
-      ));
-    }
-
-    return $this->_httpClient;
-  }
-
-  /** Modifier for $_httpClient.
-   *
-   * @param JsonApi_Http_Client $Client
-   *
-   * @return null|JsonApi_Http_Client previous HTTP client.
-   */
-  public function setHttpClient( JsonApi_Http_Client $Client )
-  {
-    $old = $this->_httpClient;
-    $this->_httpClient = $Client;
-    return $old;
   }
 
   /** Generates a signature for an array of parameters.
@@ -231,9 +194,9 @@ abstract class JsonApi_Base
    */
   static protected function _doApiCall( $class, $path, array $args, $meth )
   {
-    return JsonApi_Response::factory(
-      self::getInstance($class)->getHttpClient()->$meth($path, $args)
-    );
+    self::getInstance($class)->getHttpClient()
+      ->$meth($path, $args)
+        ->makeJsonApiResponse();
   }
 
   /** Init the class instance.

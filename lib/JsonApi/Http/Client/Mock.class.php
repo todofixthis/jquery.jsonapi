@@ -41,8 +41,11 @@ class JsonApi_Http_Client_Mock extends JsonApi_Http_Client
    *
    * @param string $path
    * @param array  $params
-   * @param string $content If null (empty string doesn't count) HTTP status
-   *                         message will be used instead.
+   * @param string $content
+   *  If null (empty string doesn't count) HTTP status message will be used
+   *    instead.
+   *  If a string value is provided, it will be seeded unmodified.
+   *  Any other value will be json_encode()'d before it is seeded.
    * @param string $method
    * @param int    $status
    *
@@ -59,7 +62,7 @@ class JsonApi_Http_Client_Mock extends JsonApi_Http_Client
     $this->_content[$method][$this->_genContentKey($path, $params)] = array(
       is_null($content)
         ? Zend_Http_Response::responseCodeAsText($status)
-        : (string) $content,
+        : is_string($content) ? $content : json_encode($content),
       (int) $status
     );
 

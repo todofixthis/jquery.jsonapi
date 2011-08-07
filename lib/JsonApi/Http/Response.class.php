@@ -85,4 +85,13 @@ class JsonApi_Http_Response
   {
     return $this->_content;
   }
+
+  /** Creates a JsonApi_Response object from this HTTP response.
+   *
+   * @return JsonApi_Response
+   */
+  public function makeJsonApiResponse(  )
+  {
+    return JsonApi_Response::factory($this);
+  }
 }
