@@ -57,7 +57,9 @@ abstract class JsonApi_Base
    *
    * @return JsonApi_Http_Client
    */
-  abstract public function getDefaultHttpClient(  );
+  public function getDefaultHttpClient(  )
+  {
+  }
 
   /** Generates/returns an API instance for a given class name.
    *
@@ -94,6 +96,14 @@ abstract class JsonApi_Base
     if( ! isset($this->_httpClient) )
     {
       $this->_httpClient = $this->getDefaultHttpClient();
+    }
+
+    if( ! $this->_httpClient )
+    {
+      throw new JsonApi_Exception(sprintf(
+        'No HTTP client defined for %s!',
+          get_class($this)
+      ));
     }
 
     return $this->_httpClient;
@@ -215,6 +225,9 @@ abstract class JsonApi_Base
    * @param string $meth 'get' or 'post'
    *
    * @return JsonApi_Response
+   *
+   * @todo Remove no-late-static-binding cruft if/when we port this plugin to
+   *  PHP 5.3.
    */
   static protected function _doApiCall( $class, $path, array $args, $meth )
   {
