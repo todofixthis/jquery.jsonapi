@@ -25,8 +25,8 @@
  *
  * @author Phoenix Zerin <phoenix.zerin@jwt.com>
  *
- * @package jwt
- * @subpackage plugin.config
+ * @package sfJwtJsonApiPlugin
+ * @subpackage config
  */
 class sfJwtJsonApiPluginConfiguration extends sfPluginConfiguration
 {

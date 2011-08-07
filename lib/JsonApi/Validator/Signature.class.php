@@ -1,21 +1,52 @@
 <?php
-/** Symfony 1.0-compatible validator for checking request signatures.
+/**
+ * Copyright (c) 2011 J. Walter Thompson dba JWT
  *
- * @package jwt
- * @subpackage lib.jsonapi
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * @todo Replace with crypto validator.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
-class JsonApi_Validator_Signature extends sfValidator
+
+/** Used to validate a basic signature in a set of request parameters.
+ *
+ * @author Phoenix Zerin <phoenix.zerin@jwt.com>
+ *
+ * @package sfJwtJsonApiPlugin
+ * @subpackage lib.jsonapi.validator
+ */
+class WidgetApi_Validator_Signature extends sfValidatorBase
 {
-  /** Executes the validator.
-   *
-   * @param mixed&  $value
-   * @param string& $error
-   *
-   * @return bool
-   */
-  public function execute( &$value, &$error )
+  protected function configure( $options = array(), $messages = array() )
+  {
+    $this->addRequiredOption('public_key');
+
+    $this->addOption('salt_required', true);
+    $this->addOption('required', true);
+
+    $this->addMessage('invalid', 'Invalid request signature.');
+    $this->addMessage('salt_missing', 'Add a salt to the request to increase entropy.');
+    $this->addMessage('salt_invalid', 'Invalid salt provided with request.');
+
+    $this->addMessage('timestamp_missing', 'Request timestamp not found.');
+    $this->addMessage('timestamp_invalid', 'Request timestamp is invalid.');
+    $this->addMessage('timestamp_expired', 'Request timestamp has expired.');
+  }
+
+  protected function doClean( $value )
   {
     if( ! is_array($value) )
     {
@@ -26,87 +57,51 @@ class JsonApi_Validator_Signature extends sfValidator
       ));
     }
 
-    $Params = $this->getParameterHolder();
-
     if( empty($value['_signature']) )
     {
-      $error = $Params->get('missing_err');
-      return false;
+      throw new sfValidatorError($this, 'required');
     }
 
-    if( $Params->get('salt_required') )
+    if( $this->getOption('salt_required') )
     {
       if( empty($value['_salt']) )
       {
-        $error = $Params->get('salt_missing_err');
-        return false;
+        throw new sfValidatorError($this, 'salt_missing');
       }
       elseif( ! preg_match('/^[a-f\d]{40}$/', $value['_salt']) )
       {
-        $error = $Params->get('salt_invalid_err');
-        return false;
+        throw new sfValidatorError($this, 'salt_invalid');
       }
     }
 
-    $test = $value['_signature'];
+    /* Validate request timestamp, if applicable. */
+    if( $maxAge = max(0, (int) sfConfig::get('app_jsonapi_request_ttl')) )
+    {
+      if( empty($value['_timestamp']) )
+      {
+        throw new sfValidatorError($this, 'timestamp_missing');
+      }
+      elseif( ! ctype_digit((string) $value['_timestamp']) )
+      {
+        throw new sfValidatorError($this, 'timestamp_invalid');
+      }
+      elseif( (time() - $value['_timestamp']) > $maxAge )
+      {
+        throw new sfValidatorError($this, 'timestamp_expired');
+      }
+    }
 
-    $compare = JsonApi_Base::generateSignature(
+    $compare = WidgetApi_Base::generateSignature(
       $value,
-      $Params->get('public_key'),
+      $this->getOption('public_key'),
       false
     );
 
-    /* For some reason, JsonApi_Base::generateSignature() will modify $value,
-     *  even if we explicitly make a copy of it.  Might be a PHP 5.3 bug.
-     */
-    $value['_signature'] = $test;
-
     if( $value['_signature'] != $compare )
     {
-      $error = $Params->get('invalid_err');
-      return false;
+      throw new sfValidatorError($this, 'invalid');
     }
 
-    return true;
-  }
-
-  /** Initialize validator configuration options.
-   *
-   * @param sfContext $context
-   * @param array     $parameters
-   *
-   * @return bool
-   */
-  public function initialize( $context, $parameters = array() )
-  {
-    parent::initialize($context);
-
-    $defaults = array(
-      'public_key'    => null,
-      'salt_required' => true,
-      'required'      => true,
-
-      'missing_err'       => 'Request signature missing.',
-      'invalid_err'       => 'Invalid request signature.',
-      'salt_missing_err'  => 'Add a salt to the request to increase entropy.',
-      'salt_invalid_err'  => 'Invalid salt provided with request.'
-    );
-
-    $parameters = array_merge(
-      $defaults,
-      array_intersect_key($parameters, $defaults)
-    );
-
-    foreach( $parameters as $key => $value )
-    {
-      if( empty($value) and ! is_bool($defaults[$key]) )
-      {
-        throw new sfValidatorException(sprintf('Missing parameter "%s".', $key));
-      }
-
-      $this->getParameterHolder()->set($key, $value);
-    }
-
-    return true;
+    return $value;
   }
 }

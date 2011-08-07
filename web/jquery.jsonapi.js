@@ -1,4 +1,27 @@
-/** Defines $.fn.jsonapi() for submitting a form via ajax to a JsonApi action.
+/**
+ * Copyright (c) 2011 J. Walter Thompson dba JWT
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+/** Defines $.fn.jsonapi() for adding triggers to elements to send form data to
+ *    JsonApi actions.
  *
  * @param Object $options
  *
@@ -125,8 +148,17 @@
  *  make JsonApi calls outside the context of an HTML element.  The parameters
  *  and behavior of $.jsonapi() are identical to those of $.fn.jsonapi(), sans
  *  anything related to HTML elements.
+ *
+ * @author Phoenix Zerin <phoenix.zerin@jwt.com>
+ *
+ * @package sfJwtJsonApiPlugin
+ * @subpackage web
  */
 (function( $ ) {
+  /** $.jsonapi() for making an ad-hoc JsonApi request.
+   *
+   * Also leveraged by $.fn.jsonapi() below.
+   */
   $.extend({'jsonapi': function( $options ) {
     $options = $.extend(
       {
@@ -246,6 +278,10 @@
     });
   }});
 
+  /** $.fn.jsonapi() for adding JsonApi triggers to object events.
+   *
+   * See document docblock for more information.
+   */
   $.extend($.fn, {'jsonapi': function( $options ) {
     $options = $.extend(
       {

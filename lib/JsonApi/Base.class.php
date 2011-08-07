@@ -1,10 +1,32 @@
 <?php
-/** Base functionality for the JSON API.
+/**
+ * Copyright (c) 2011 J. Walter Thompson dba JWT
  *
- * @package jwt
- * @subpackage lib.JsonApi
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * @todo Replace signature junk with crypto.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+/** Base functionality for JsonApi API classes.
+ *
+ * @author Phoenix Zerin <phoenix.zerin@jwt.com>
+ *
+ * @package sfJwtJsonApiPlugin
+ * @subpackage lib.jsonapi
  */
 abstract class JsonApi_Base
 {
@@ -29,6 +51,9 @@ abstract class JsonApi_Base
     $_instances = array();
 
   /** Sets the default HTTP client and hostname.
+   *
+   * Most every subclass will `return new JsonApi_Http_Client_Zend($hostname)`,
+   *  where $hostname is the hostname of the JsonApi server for that service.
    *
    * @return JsonApi_Http_Client
    */
