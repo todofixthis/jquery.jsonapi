@@ -182,7 +182,7 @@ class JsonApi_Actions extends sfActions
     }
   }
 
-  /** Generic success notifier, shared among API calls.
+  /** Sends success response.
    *
    * @param array $messages Additional messages to be included in the response.
    *
@@ -196,7 +196,7 @@ class JsonApi_Actions extends sfActions
     ));
   }
 
-  /** Generic error notifier, shared among API calls.
+  /** Sends error response.
    *
    * @return string
    */
