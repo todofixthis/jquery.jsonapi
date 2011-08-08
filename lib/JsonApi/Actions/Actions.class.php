@@ -28,7 +28,6 @@
  * @package sfJwtJsonApiPlugin
  * @subpackage lib.jsonapi.actions
  *
- * @todo Remove validator message nonsense.
  * @todo Convert array validation into custom validator.
  * @todo Add crypto functionality.
  */
@@ -42,67 +41,6 @@ class JsonApi_Actions extends sfActions
 
     KEY_ARRAY_INVALID = 'array_invalid',
     ERR_ARRAY_INVALID = 'Array value not allowed.';
-
-  private
-    $_validatorMessages = array();
-
-  /** Common stuff that should be done before executing the action.
-   *
-   * @return void
-   *
-   * @todo Slugifying error messages is not generally desirable behavior.  See
-   *  if this behavior can be removed safely, or better - return errors in
-   *  (slug, human-readable) format.
-   */
-  public function preExecute(  )
-  {
-    $this->_setValidatorMessages(array(
-      'invalid'       => 'invalid',
-      'required'      => 'missing',
-      'min'           => 'too-small',
-      'min_length'    => 'too-small',
-      'max'           => 'too-big',
-      'max_length'    => 'too-big',
-
-      /* Triggered if an array is found where a scalar was expected. */
-      self::KEY_ARRAY_INVALID => 'array-invalid'
-    ));
-  }
-
-  /** Accessor for $_validatorMessages.
-   *
-   * @return array
-   */
-  protected function _getValidatorMessages(  )
-  {
-    return $this->_validatorMessages;
-  }
-
-  /** Returns a specific validator message.
-   *
-   * @param string $key
-   * @param string $fallback
-   *
-   * @return string
-   */
-  protected function _getValidatorMessage( $key, $fallback = '' )
-  {
-    return
-      isset($this->_validatorMessages[$key])
-        ? $this->_validatorMessages[$key]
-        : $fallback;
-  }
-
-  /** Mutator for $_validatorMessages.
-   *
-   * @param array $messages
-   *
-   * @return void
-   */
-  protected function _setValidatorMessages( array $messages )
-  {
-    $this->_validatorMessages = $messages;
-  }
 
   /** Require POST or dev environment.
    *
@@ -178,19 +116,8 @@ class JsonApi_Actions extends sfActions
     }
     else
     {
-      $messages = $this->_getValidatorMessages();
-
       foreach( (array) $validators as $Validator )
       {
-        /* Iterate over $messages instead of using setDefaultMessages() to avoid
-         *  erasing any messages that are not included in $messages but supported
-         *  by the $Validator.
-         */
-        foreach( $messages as $code => $message )
-        {
-          $Validator->setDefaultMessage($code, $message);
-        }
-
         try
         {
           $var = $Validator->clean($var);
@@ -204,23 +131,6 @@ class JsonApi_Actions extends sfActions
 
       return $var;
     }
-  }
-
-  /** Fetch a numeric parameter from the request.
-   *
-   * @param string $key
-   * @param array  $params Passed to sfValidatorNumber.
-   *
-   * @return int|float
-   */
-  protected function _getNumericParam( $key, array $params = array() )
-  {
-    return
-      $this->_getParam($key, array(
-        new sfValidatorNumber($params, array(
-          'invalid' => 'malformed'
-        ))
-      ));
   }
 
   /** Returns whether there are error messages.
