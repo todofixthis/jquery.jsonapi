@@ -29,6 +29,8 @@
  * @subpackage lib.jsonapi.http
  *
  * @todo Add crypto functionality.
+ * @todo Add logging functionality.
+ * @todo Probably should implement observer pattern for the previous @todos.
  */
 abstract class JsonApi_Http_Client
 {
