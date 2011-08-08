@@ -31,4 +31,7 @@
  * @package sfJwtJsonApiPlugin
  * @subpackage modules.jsonapi.templates
  */
-echo '<pre>', esc_entities(print_r($result, true)), '</pre>';
+echo '<pre>', esc_entities(print_r(
+  (($result instanceof sfOutputEscaper) ? $result->getRawValue() : $result),
+  true
+)), '</pre>';
