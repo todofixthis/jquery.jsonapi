@@ -37,6 +37,8 @@ class WidgetApi_Validator_Signature extends sfValidatorBase
     $this->addOption('salt_required', true);
     $this->addOption('required', true);
 
+    $this->addOption('max_ttl', 0);
+
     $this->addMessage('invalid', 'Invalid request signature.');
     $this->addMessage('salt_missing', 'Add a salt to the request to increase entropy.');
     $this->addMessage('salt_invalid', 'Invalid salt provided with request.');
@@ -75,7 +77,7 @@ class WidgetApi_Validator_Signature extends sfValidatorBase
     }
 
     /* Validate request timestamp, if applicable. */
-    if( $maxAge = max(0, (int) sfConfig::get('app_jsonapi_request_ttl')) )
+    if( $maxAge = max(0, $this->getOption('max_ttl')) )
     {
       if( empty($value['_timestamp']) )
       {
