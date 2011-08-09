@@ -62,7 +62,7 @@ class JsonApi_Http_Client_Mock extends JsonApi_Http_Client
     $this->_content[$method][$this->_genContentKey($path, $params)] = array(
       is_null($content)
         ? Zend_Http_Response::responseCodeAsText($status)
-        : is_string($content) ? $content : json_encode($content),
+        : (is_string($content) ? $content : json_encode($content)),
       (int) $status
     );
 
