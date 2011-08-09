@@ -66,14 +66,11 @@ abstract class JsonApi_Response
         break;
 
         default:
-          throw new JsonApi_Response_Exception(
-            sprintf(
-              'Unrecognized HTTP status code:  %s (%s).',
-                $response->getStatus(),
-                $response->getStatus(true)
-            ),
-            $response
-          );
+          throw new JsonApi_Response_Exception(sprintf(
+            'Unrecognized HTTP status code:  %s (%s).',
+              $response->getStatus(),
+              $response->getStatus(true)
+          ));
         break;
       }
 
