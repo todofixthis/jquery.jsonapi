@@ -122,15 +122,9 @@ class JsonApi_Http_Client_Mock extends JsonApi_Http_Client
    */
   protected function _genContentKey( $path, array $params )
   {
-    /* Because request signatures can't be predicted, ignore them. */
-    unset($params['_salt'], $params['_signature'], $params['_timestamp']);
-
-    /* Convert all parameters to strings. */
-    array_walk_recursive(
-      $params,
-      create_function('&$val, $key', '$val = (string) $val;')
+    return (string) $this->getUri(
+      $path,
+      JsonApi_Utility::normalizeParams($params)
     );
-
-    return (string) $this->getUri($path, $params);
   }
 }
