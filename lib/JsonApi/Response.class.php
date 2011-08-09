@@ -76,6 +76,8 @@ abstract class JsonApi_Response
    *
    * @return void
    * @access protected use factory() to create a new instance.
+   *
+   * @final Override {@see _initialize()} to customize subclass initialization.
    */
   final protected function __construct( JsonApi_Http_Response $Response )
   {
