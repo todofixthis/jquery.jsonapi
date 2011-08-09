@@ -21,52 +21,33 @@
  * THE SOFTWARE.
  */
 
-/** A response from the JsonApi server that we can't make heads or tails of.
+/** An exception that was caught by JsonApi_Response::factory(), but rethrown
+ *    in the application code.
  *
  * @author Phoenix Zerin <phoenix.zerin@jwt.com>
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage lib.jsonapi.response
  */
-class JsonApi_Response_Error extends JsonApi_Response
+class JsonApi_Response_RethrownException extends JsonApi_Response_Exception
 {
   protected
+    /** @var JsonApi_Http_Response */
+    $_response,
+
     /** @var JsonApi_Exception */
     $_exception;
 
-  /** Initialize response properties.
+  /** Init the class instance.
+   *
+   * @param JsonApi_Http_Response $response
+   * @param JsonApi_Exception     $exception
    *
    * @return void
    */
-  protected function _initialize(  )
+  public function __construct( JsonApi_Http_Response $response, JsonApi_Exception $exception )
   {
-    /* Do nothing.  Note that we are overriding the parent _initialize() method,
-     *  which does a lot more than nothing.
-     */
-  }
-
-  /** Attach an exception to the object.
-   *
-   * @param JsonApi_Exception $exception
-   *
-   * @return JsonApi_Response_Error($this)
-   */
-  public function attachException( JsonApi_Exception $exception )
-  {
+    $this->_response  = $response;
     $this->_exception = $exception;
-    return $this;
-  }
-
-  /** Throw the exception that we caught.
-   *
-   * @return void
-   * @throws JsonApi_Response_Exception
-   */
-  public function throwException(  )
-  {
-    throw new JsonApi_Response_RethrownException(
-      $this->getResponseObject(),
-      $this->_exception
-    );
   }
 }

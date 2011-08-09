@@ -76,7 +76,7 @@ abstract class JsonApi_Response
 
       return new $class($response);
     }
-    catch( JsonApi_Response_Exception $e )
+    catch( JsonApi_Exception $e )
     {
       $result = new JsonApi_Response_Error($response);
       $result->attachException($e);
