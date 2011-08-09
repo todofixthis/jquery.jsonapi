@@ -196,6 +196,13 @@ abstract class JsonApi_Response
       );
     }
 
+    if( empty($decoded->status) )
+    {
+      throw new JsonApi_Response_Exception(
+        'JSON Response from server is in an unknown format.'
+      );
+    }
+
     return $decoded;
   }
 }
