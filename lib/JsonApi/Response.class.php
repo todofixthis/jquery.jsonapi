@@ -39,8 +39,11 @@ abstract class JsonApi_Response
     KEY_DETAIL  = 'detail';
 
   private
+    /** @var Jsonapi_Http_Response */
     $_response,
-    $_props;
+    /** @var sfParameterHolder */
+    $_props,
+    $_decoded;
 
   /** Generate a response object from the API call response.
    *
@@ -111,12 +114,22 @@ abstract class JsonApi_Response
   protected function _initialize(  )
   {
     /* Decode the JSON-encoded content and assign detail parameters. */
-    $decoded = $this->_decodeJson($this->getResponseObject()->getContent());
+    $this->_decoded = $this->_decodeJson(
+      $this->getResponseObject()->getContent()
+    );
+  }
 
+  /** Initializes the properties object with the detail entry in the decoded
+   *    response.
+   *
+   * @return void
+   */
+  protected function _initDetail(  )
+  {
     $key = self::KEY_DETAIL;
-    if( ! empty($decoded->$key) )
+    if( ! empty($this->_decoded->$key) )
     {
-      $this->getPropertiesObject()->add((array) $decoded->$key);
+      $this->getPropertiesObject()->add((array) $this->_decoded->$key);
     }
   }
 
@@ -136,6 +149,16 @@ abstract class JsonApi_Response
   public function getUri(  )
   {
     return $this->getResponseObject()->getUri();
+  }
+
+  /** Returns the decoded JSON response content.
+   *
+   * @return stdClass
+   * @access protected only the subclass should have access to this.
+   */
+  protected function getDecodedJson(  )
+  {
+    return $this->_decoded;
   }
 
   /** Accessor for $_props.

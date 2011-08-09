@@ -30,4 +30,22 @@
  */
 class JsonApi_Response_Success extends JsonApi_Response
 {
+  /** Initialize the response object.
+   *
+   * @return void
+   */
+  protected function _initialize(  )
+  {
+    parent::_initialize();
+
+    if( $this->getDecodedJson()->status != self::STATUS_OK )
+    {
+      throw new JsonApi_Response_Exception(sprintf(
+        'Received unexpected "%s" status value for success message.',
+          $this->getDecodedJson()->status
+      ));
+    }
+
+    $this->_initDetail();
+  }
 }
