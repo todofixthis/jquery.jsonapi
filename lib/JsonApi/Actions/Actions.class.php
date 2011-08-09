@@ -27,9 +27,6 @@
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage lib.jsonapi.actions
- *
- * @todo Convert array validation into custom validator.
- * @todo Add crypto functionality.
  */
 class JsonApi_Actions extends sfActions
 {
