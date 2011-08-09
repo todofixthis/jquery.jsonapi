@@ -216,7 +216,7 @@ class JsonApi_Actions extends sfActions
    *
    * @return string 'NONE'
    */
-  protected function _renderJson( array $response )
+  private function _renderJson( array $response )
   {
     if( sfConfig::get('sf_environment') == 'dev' )
     {
