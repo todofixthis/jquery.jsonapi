@@ -73,15 +73,23 @@ class JsonApi_Signature_Generator
   /** Generates a signed array of parameters.
    *
    * @param array $params
+   * @param bool  $preserve Preserve salt and timestamp in array when computing
+   *  the signature hash.  This is used when verifying that the signature in an
+   *  already-signed array is valid.
    *
    * @return array copy of $params with signature parameters.
    */
-  public function sign( array $params )
+  public function sign( array $params, $preserve = false )
   {
     /* Operate on a copy of $params so that we can modify stuff to our heart's
      *  content but still return a minimally-modified version at the end.
      */
     $copy = array();
+
+    /* Convert all keys and values to strings because that's how they will look
+     *  on the receiving end.
+     */
+    array_walk_recursive($params, array($this, '_stringify'));
 
     /* Do not use sf_* or __jsonapi_* keys. */
     foreach( $params as $name => $val )
@@ -91,10 +99,7 @@ class JsonApi_Signature_Generator
 
       if( ! ($isSF or $isJA) )
       {
-        /* Convert all keys and values to strings because that's how they will
-         *  look on the receiving end.
-         */
-        $copy[(string) $name] = (string) $val;
+        $copy[$name] = $val;
       }
     }
 
@@ -103,11 +108,35 @@ class JsonApi_Signature_Generator
 
     /* Add salt to both arrays (it's part of the signature). */
     $key = self::KEY_PREFIX . self::KEY_SALT;
-    $params[$key] = $copy[$key] = $this->_genSalt();
+    if( $preserve )
+    {
+      if( empty($params[$key]) )
+      {
+        throw new InvalidArgumentException(
+          'Signed array is missing salt value.'
+        );
+      }
+    }
+    else
+    {
+      $params[$key] = $copy[$key] = $this->_genSalt();
+    }
 
     /* Add timestamp to both arrays (it's part of the signature). */
     $key = self::KEY_PREFIX . self::KEY_TIME;
-    $params[$key] = $copy[$key] = $this->_genTimestamp();
+    if( $preserve )
+    {
+      if( empty($params[$key]) )
+      {
+        throw new InvalidArgumentException(
+          'Signed array is missing timestamp value.'
+        );
+      }
+    }
+    else
+    {
+      $params[$key] = $copy[$key] = $this->_genTimestamp();
+    }
 
     /* Generate the signature. */
     $key = self::KEY_PREFIX . self::KEY_SIG;
@@ -135,5 +164,23 @@ class JsonApi_Signature_Generator
   protected function _genTimestamp(  )
   {
     return (string) time();
+  }
+
+  /** Used by {@see sign()} to convert array values into strings before
+   *    computing the signature hash.
+   *
+   * This is important because we're using serialize() to create a string
+   *  version of the array that we are signing, so type matters.
+   *
+   * @param mixed&  $val
+   * @param mixed   $key  Note that converting the key is less important because
+   *  PHP automatically converts all non-numerics into strings and all numerics
+   *  into ints.
+   *
+   * @return void
+   */
+  private function _stringify( &$val, $key )
+  {
+    $val = (string) $val;
   }
 }
