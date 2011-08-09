@@ -92,34 +92,32 @@ abstract class JsonApi_Response
    * @return void
    * @access protected use factory() to create a new instance.
    *
-   * @final Override {@see _initialize()} to customize subclass initialization.
+   * @final Override _initialize() in subclasses to customize initialization.
    */
   final protected function __construct( JsonApi_Http_Response $response )
   {
     $this->_response = $response;
     $this->_props    = new sfParameterHolder();
 
+    /* Perform subclass-specific initialization. */
+    $this->_initialize();
+  }
+
+  /** Post-constructor initialization.  Override this method in subclasses to
+   *    customize initialization behavior.
+   *
+   * @return void
+   */
+  protected function _initialize(  )
+  {
     /* Decode the JSON-encoded content and assign detail parameters. */
-    $decoded = $this->_decodeJson($response->getContent());
+    $decoded = $this->_decodeJson($this->getResponseObject()->getContent());
 
     $key = self::KEY_DETAIL;
     if( ! empty($decoded->$key) )
     {
       $this->getPropertiesObject()->add((array) $decoded->$key);
     }
-
-    /* Perform subclass-specific initialization. */
-    $this->_initialize($decoded);
-  }
-
-  /** Post-constructor initialization.  Override this method in subclasses.
-   *
-   * @param stdClass $response Decoded JSON response.
-   *
-   * @return void
-   */
-  protected function _initialize( stdClass $response )
-  {
   }
 
   /** Accessor for $_response.
@@ -193,6 +191,9 @@ abstract class JsonApi_Response
   {
     if( ! $decoded = json_decode($content) )
     {
+      throw new JsonApi_Response_Exception(
+        'Response from server is either malformed or not JSON.'
+      );
     }
 
     return $decoded;

@@ -36,12 +36,12 @@ class JsonApi_Response_Failure extends JsonApi_Response
 
   /** Init the response object.
    *
-   * @param stdClass $response
-   *
    * @return void
    */
-  protected function _initialize( stdClass $response )
+  protected function _initialize(  )
   {
+    parent::_initialize();
+
     /* Convert errors into an array. */
     $props = $this->getPropertiesObject();
     $props->set(self::KEY_ERRORS, (array) $props->get(self::KEY_ERRORS));

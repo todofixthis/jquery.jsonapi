@@ -30,14 +30,11 @@
  */
 class JsonApi_Response_Error extends JsonApi_Response
 {
-  /** Init the response object.
-   *
-   * @param stdClass $response
+  /** Initialize response properties.
    *
    * @return void
-   * @throws JsonApi_Response_Exception
    */
-  protected function _initialize( stdClass $response )
+  protected function _initialize(  )
   {
   }
 }
