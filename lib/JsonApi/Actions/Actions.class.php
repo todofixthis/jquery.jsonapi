@@ -74,61 +74,6 @@ class JsonApi_Actions extends sfActions
     );
   }
 
-  /** Runs a set of validators on a value.
-   *
-   * @param string    $name
-   * @param mixed     $var
-   * @param array     $validators
-   * @param bool|int  $allowArrayValue
-   *
-   * @return mixed
-   */
-  protected function validate( $name, $var, array $validators, $allowArrayValue = false )
-  {
-    if( is_array($var) )
-    {
-      if( $allowArrayValue > 0 )
-      {
-        $validated = array();
-        foreach( $var as $subKey => $subVal )
-        {
-          $validated[$subKey] = $this->validate(
-            "{$name}[{$subKey}]",
-            $subVal,
-            $validators,
-            is_int($allowArrayValue) ? ($allowArrayValue - 1) : (bool) $allowArrayValue
-          );
-        }
-        return $validated;
-      }
-      else
-      {
-        $this->_setError(
-          $name,
-          self::ERR_ARRAY_INVALID
-        );
-        return null;
-      }
-    }
-    else
-    {
-      foreach( (array) $validators as $Validator )
-      {
-        try
-        {
-          $var = $Validator->clean($var);
-        }
-        catch( sfValidatorError $e )
-        {
-          $this->setError($name, $e->getMessage());
-          return null;
-        }
-      }
-
-      return $var;
-    }
-  }
-
   /** Returns whether there are error messages.
    *
    * @return bool
