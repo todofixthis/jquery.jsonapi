@@ -49,5 +49,36 @@ class JsonApi_Response_RethrownException extends JsonApi_Response_Exception
   {
     $this->_response  = $response;
     $this->_exception = $exception;
+
+    parent::__construct(
+      sprintf(
+        'Got %s "%s" when requesting %s (%d %s).',
+          get_class($exception),
+          $exception->getMessage(),
+          $response->getUri(),
+          $response->getStatus(),
+          $response->getStatus(true)
+      ),
+      $response->getStatus(),
+      $exception
+    );
+  }
+
+  /** Returns the response object that was the cause of all the trouble.
+   *
+   * @return JsonApi_Http_Response
+   */
+  public function getResponseObject(  )
+  {
+    return $this->_response;
+  }
+
+  /** Returns the original exception object that was rethrown.
+   *
+   * @return JsonApi_Exception
+   */
+  public function getExceptionObject(  )
+  {
+    return $this->_exception;
   }
 }
