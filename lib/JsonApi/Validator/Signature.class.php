@@ -27,6 +27,8 @@
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage lib.jsonapi.validator
+ *
+ * @todo Rewrite for JsonApi_Signature_Generator.
  */
 class WidgetApi_Validator_Signature extends sfValidatorBase
 {
