@@ -32,7 +32,7 @@ class WidgetApi_Validator_Signature extends sfValidatorBase
 {
   protected function configure( $options = array(), $messages = array() )
   {
-    $this->addRequiredOption('public_key');
+    $this->addRequiredOption('private_key');
 
     $this->addOption('salt_required', true);
     $this->addOption('required', true);
@@ -93,7 +93,7 @@ class WidgetApi_Validator_Signature extends sfValidatorBase
 
     $compare = WidgetApi_Base::generateSignature(
       $value,
-      $this->getOption('public_key'),
+      $this->getOption('private_key'),
       false
     );
 
