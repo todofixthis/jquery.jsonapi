@@ -40,7 +40,7 @@ class JsonApi_UtilityTest extends Test_Case_Unit
       'Expected stdClass instance to be iterable.'
     );
 
-    $this->assertTrue(JsonApi_Utility::isIterable(new TestIterator()),
+    $this->assertTrue(JsonApi_Utility::isIterable(new ArrayObject()),
       'Expected instance of class implementing Traversable to be iterable.'
     );
 
@@ -52,27 +52,71 @@ class JsonApi_UtilityTest extends Test_Case_Unit
       'Expected instance of class not implementing Traversable to be not iterable.'
     );
   }
+
+  public function test_stringifyString()
+  {
+    $ctrl = $test = array('hello');
+    array_walk_recursive($test, array('JsonApi_Utility', '_stringify'));
+
+    $this->assertSame($ctrl, $test,
+      'Expected string value to be unchanged when stringified.'
+    );
+  }
+
+  public function test_stringifyScalar()
+  {
+    $test = array(5);
+    array_walk_recursive($test, array('JsonApi_Utility', '_stringify'));
+    $this->assertSame(array('5'), $test,
+      'Expected scalar value to be converted to string when stringified.'
+    );
+  }
+
+  public function test_stringifyStringableObject()
+  {
+    $test = array(new TestStringable());
+    array_walk_recursive($test, array('JsonApi_Utility', '_stringify'));
+
+    $this->assertSame(array(TestStringable::STR), $test,
+      'Expected instance of stringable class to be converted to string when stringified.'
+    );
+  }
+
+  public function test_stringifyMultidimensionalArray()
+  {
+    $test = array(array(5, 10), array(15, 20));
+    array_walk_recursive($test, array('JsonApi_Utility', '_stringify'));
+
+    $this->assertSame(array(array('5', '10'), array('15', '20')), $test,
+      'Expected sub-array values to be stringified.'
+    );
+  }
+
+  public function test_stringifyIterableObject()
+  {
+    $test = array(new ArrayObject(array(5, 10)));
+    array_walk_recursive($test, array('JsonApi_Utility', '_stringify'));
+
+    $this->assertSame(array(array('5', '10')), $test,
+      'Expected instance of iterable class to be iterated when stringified.'
+    );
+  }
 }
 
-class TestIterator implements Iterator
+/** Used to test JsonApi_Utility::_stringify().
+ *
+ * @author Phoenix Zerin <phoenix.zerin@jwt.com>
+ *
+ * @package sfJwtJsonApiPlugin
+ * @subpackage test.lib.jsonapi
+ */
+class TestStringable
 {
-	public function current(  )
-  {
-  }
+  const
+    STR = 'Hello, World!';
 
-	public function next(  )
+  public function __toString(  )
   {
-  }
-
-	public function key(  )
-  {
-  }
-
-	public function valid(  )
-  {
-  }
-
-	public function rewind(  )
-  {
+    return self::STR;
   }
 }

@@ -125,7 +125,7 @@ class JsonApi_Utility
       $copy = array();
       foreach( $val as $field => $value )
       {
-        $copy[$field] = $value;
+        $copy[$field] = (string) $value;
       }
       $val = $copy;
     }
