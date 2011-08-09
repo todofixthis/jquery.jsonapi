@@ -55,8 +55,8 @@ class JsonApi_UtilityTest extends Test_Case_Unit
 
   public function test_stringifyString()
   {
-    $ctrl = $test = array('hello');
-    array_walk_recursive($test, array('JsonApi_Utility', '_stringify'));
+    $ctrl = array('hello');
+    $test = $this->_doStringify($ctrl);
 
     $this->assertSame($ctrl, $test,
       'Expected string value to be unchanged when stringified.'
@@ -65,8 +65,10 @@ class JsonApi_UtilityTest extends Test_Case_Unit
 
   public function test_stringifyScalar()
   {
-    $test = array(5);
-    array_walk_recursive($test, array('JsonApi_Utility', '_stringify'));
+    $test = $this->_doStringify(array(
+      5
+    ));
+
     $this->assertSame(array('5'), $test,
       'Expected scalar value to be converted to string when stringified.'
     );
@@ -74,8 +76,9 @@ class JsonApi_UtilityTest extends Test_Case_Unit
 
   public function test_stringifyStringableObject()
   {
-    $test = array(new TestStringable());
-    array_walk_recursive($test, array('JsonApi_Utility', '_stringify'));
+    $test = $this->_doStringify(array(
+      new TestStringable()
+    ));
 
     $this->assertSame(array(TestStringable::STR), $test,
       'Expected instance of stringable class to be converted to string when stringified.'
@@ -84,8 +87,9 @@ class JsonApi_UtilityTest extends Test_Case_Unit
 
   public function test_stringifyMultidimensionalArray()
   {
-    $test = array(array(5, 10), array(15, 20));
-    array_walk_recursive($test, array('JsonApi_Utility', '_stringify'));
+    $test = $this->_doStringify(array(
+      array(5, 10), array(15, 20)
+    ));
 
     $this->assertSame(array(array('5', '10'), array('15', '20')), $test,
       'Expected sub-array values to be stringified.'
@@ -94,12 +98,26 @@ class JsonApi_UtilityTest extends Test_Case_Unit
 
   public function test_stringifyIterableObject()
   {
-    $test = array(new ArrayObject(array(5, 10)));
-    array_walk_recursive($test, array('JsonApi_Utility', '_stringify'));
+    $test = $this->_doStringify(array(
+      new ArrayObject(array(5, 10))
+    ));
 
     $this->assertSame(array(array('5', '10')), $test,
       'Expected instance of iterable class to be iterated when stringified.'
     );
+  }
+
+  /** Runs an array through JsonApi_Utility::_stringify() and returns the
+   *    result.
+   *
+   * @param array $control
+   *
+   * @return array modified *copy* of $control.
+   */
+  protected function _doStringify( array $control )
+  {
+    array_walk_recursive($control, array('JsonApi_Utility', '_stringify'));
+    return $control;
   }
 }
 
