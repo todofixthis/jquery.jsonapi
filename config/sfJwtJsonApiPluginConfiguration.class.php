@@ -30,6 +30,7 @@
  */
 class sfJwtJsonApiPluginConfiguration extends sfPluginConfiguration
 {
+  /** @todo Check for Zend Framework. */
   public function initialize(  )
   {
   }
