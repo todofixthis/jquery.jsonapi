@@ -31,6 +31,9 @@
  */
 class JsonApi_Response_Failure extends JsonApi_Response
 {
+  const
+    KEY_ERRORS = 'errors';
+
   /** Init the response object.
    *
    * @param stdClass $response
@@ -39,5 +42,8 @@ class JsonApi_Response_Failure extends JsonApi_Response
    */
   protected function _initialize( stdClass $response )
   {
+    /* Convert errors into an array. */
+    $props = $this->getPropertiesObject();
+    $props->set(self::KEY_ERRORS, (array) $props->get(self::KEY_ERRORS));
   }
 }

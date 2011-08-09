@@ -58,7 +58,7 @@ abstract class JsonApi_Response
           $class = 'JsonApi_Response_Success';
         break;
 
-        case JsonApi_Http_Response::STATUS_BAD_REQUEST:
+        case JsonApi_Http_Response::STATUS_FAIL:
           $class = 'JsonApi_Response_Failure';
         break;
 

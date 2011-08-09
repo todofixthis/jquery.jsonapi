@@ -31,9 +31,6 @@
 class JsonApi_Actions extends sfActions
 {
   const
-    STATUS_OK     = 'OK',
-    STATUS_ERROR  = 'ERROR',
-
     DEBUG = 'Debug',
 
     ERR_ARRAY_INVALID = 'Array value not allowed.';
@@ -63,7 +60,7 @@ class JsonApi_Actions extends sfActions
    */
   protected function getParam( $key, $validators = array(), $allowArrayValue = false )
   {
-    return $this->validate(
+    return $this->_validate(
       $key,
       $this->getRequest()->getParameter($key),
       $validators,
@@ -129,10 +126,13 @@ class JsonApi_Actions extends sfActions
    */
   protected function success( array $messages = array() )
   {
-    $response = array('status' => self::STATUS_OK);
+    $response = array(
+      JsonApi_Response::KEY_STATUS => JsonApi_Response::STATUS_OK
+    );
+
     if( $messages )
     {
-      $response['detail'] = $messages;
+      $response[JsonApi_Response::KEY_DETAIL] = $messages;
     }
 
     return $this->_renderJson($response);
@@ -147,9 +147,63 @@ class JsonApi_Actions extends sfActions
     $this->getResponse()->setStatusCode(400);
 
     return $this->_renderJson(array(
-      'status'  => self::STATUS_ERROR,
-      'detail'  => array('errors' => $this->getErrors())
+      JsonApi_Response::KEY_STATUS  => JsonApi_Response::STATUS_FAIL,
+      JsonApi_Response::KEY_DETAIL  => array(
+        JsonApi_Response_Failure::KEY_ERRORS => $this->getErrors()
+      )
     ));
+  }
+
+  /** Validates an incoming parameter.
+   *
+   * @param string                  $key
+   * @param mixed                   $val
+   * @param array(sfValidatorBase)  $validators
+   * @param bool|int                $array
+   */
+  private function _validate( $key, $val, array $validators, $array )
+  {
+    if( is_array($val) )
+    {
+      if( $array > 0 )
+      {
+        /* Validate all elements of $val using the same set of validators. */
+        $validated = array();
+        foreach( $val as $subKey => $subVal )
+        {
+          $validated[$subKey] = $this->_validate(
+            "{$key}[{$subKey}]",
+            $subVal,
+            $validators,
+            (is_int($array) ? ($array - 1) : (bool) $array)
+          );
+        }
+        return $validated;
+      }
+      else
+      {
+        $this->setError($key, self::ERR_ARRAY_INVALID);
+        return null;
+      }
+    }
+    else
+    {
+      /* @var $validator sfValidatorBase */
+      foreach( (array) $validators as $validator )
+      {
+        try
+        {
+          $val = $validator->clean($val);
+        }
+        catch( sfValidatorError $e )
+        {
+          $this->setError($key, $e->getMessage());
+          return null;
+        }
+      }
+
+      return $val;
+    }
   }
 
   /** Renders an array as a JSON string.
