@@ -226,7 +226,7 @@ class JsonApi_Actions extends sfActions
           ->getRootDir() . '/modules/jsonapi/templates/';
 
       /* Using a template so that the sfWebDebugToolbar can render as well. */
-      $this->setTemplate($root . '_api');
+      $this->setTemplate($root . 'api');
       $this->setLayout($root . 'layout');
 
       $this->result = $response;
