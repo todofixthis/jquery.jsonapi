@@ -42,6 +42,16 @@ class JsonApi_Response_Failure extends JsonApi_Response
   {
     parent::_initialize();
 
+    if( $this->getDecodedJson()->status != self::STATUS_FAIL )
+    {
+      throw new JsonApi_Response_Exception(sprintf(
+        'Received unexpected "%s" status value for failure message.',
+          $this->getDecodedJson()->status
+      ));
+    }
+
+    $this->_initDetail();
+
     /* Convert errors into an array. */
     $props = $this->getPropertiesObject();
     $props->set(self::KEY_ERRORS, (array) $props->get(self::KEY_ERRORS));
