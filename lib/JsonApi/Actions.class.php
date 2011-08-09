@@ -26,9 +26,7 @@
  * @author Phoenix Zerin <phoenix.zerin@jwt.com>
  *
  * @package sfJwtJsonApiPlugin
- * @subpackage lib.jsonapi.actions
- *
- * @todo Relocate to /lib/JsonApi.
+ * @subpackage lib.jsonapi
  */
 class JsonApi_Actions extends sfActions
 {
