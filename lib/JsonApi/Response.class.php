@@ -203,6 +203,20 @@ abstract class JsonApi_Response
       );
     }
 
+    switch( $decoded->status )
+    {
+      case self::STATUS_OK:
+      case self::STATUS_FAIL:
+      break;
+
+      default:
+        throw new JsonApi_Response_Exception(sprintf(
+          'JSON response from server contains unknown status value "%s".',
+            $decoded->status
+        ));
+      break;
+    }
+
     return $decoded;
   }
 }
