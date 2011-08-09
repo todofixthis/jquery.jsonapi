@@ -50,6 +50,11 @@ class JsonApi_Signature_Generator
    */
   public function __construct( $key, $algorithm = self::ALGORITHM_DEFAULT )
   {
+    if( $key == '' )
+    {
+      throw new InvalidArgumentException('Key must not be empty.');
+    }
+
     if( ! function_exists('hash') )
     {
       throw new RuntimeException(sprintf(
