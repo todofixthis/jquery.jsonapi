@@ -28,8 +28,6 @@
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage lib.test.browser.plugin
- *
- * @todo Verify that this doesn't cause problems if JPUP is not installed.
  */
 class Test_Browser_Plugin_JsonApiResponse extends Test_Browser_Plugin
 {
