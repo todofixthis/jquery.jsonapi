@@ -30,13 +30,17 @@
  */
 class JsonApi_Http_Response
 {
+  /**#@+ Corresponds to matching constant in JsonApi_Base. */
   const
-    STATUS_OK           = 200,
-    STATUS_BAD_REQUEST  = 400;
+    STATUS_OK   = 200,
+    STATUS_FAIL = 400,
+    STATUS_ERR  = 500;
+  /**#@-*/
 
   protected
     $_status,
     $_content,
+    /** @var Zend_Uri_Http */
     $_uri;
 
   /** Init the class instance.

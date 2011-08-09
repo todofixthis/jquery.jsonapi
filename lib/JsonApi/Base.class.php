@@ -30,10 +30,6 @@
  */
 abstract class JsonApi_Base
 {
-  const
-    STATUS_OK     = 'OK',
-    STATUS_ERROR  = 'ERROR';
-
   static private
 
     /** @kludge PHP 5.2 does not support late static binding, but we need a way

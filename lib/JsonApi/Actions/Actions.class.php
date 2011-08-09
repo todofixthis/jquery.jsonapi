@@ -122,16 +122,20 @@ class JsonApi_Actions extends sfActions
 
   /** Sends success response.
    *
-   * @param array $messages Additional messages to be included in the response.
+   * @param array $messages Additional messages to be included in the response
+   *  detail.
    *
    * @return string
    */
   protected function success( array $messages = array() )
   {
-    return $this->_renderJson(array_merge(
-      array('status' => self::STATUS_OK),
-      $messages
-    ));
+    $response = array('status' => self::STATUS_OK);
+    if( $messages )
+    {
+      $response['detail'] = $messages;
+    }
+
+    return $this->_renderJson($response);
   }
 
   /** Sends error response.
@@ -144,7 +148,7 @@ class JsonApi_Actions extends sfActions
 
     return $this->_renderJson(array(
       'status'  => self::STATUS_ERROR,
-      'errors'  => $this->getErrors()
+      'detail'  => array('errors' => $this->getErrors())
     ));
   }
 

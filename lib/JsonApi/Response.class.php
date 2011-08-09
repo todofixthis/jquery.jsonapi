@@ -31,14 +31,12 @@
 abstract class JsonApi_Response
 {
   const
-    ERR_NO_EXCEPTION      = '(no exception message available)',
-    ERR_NO_STATUS         = 'No status property returned from API server.',
-    ERR_INVALID_STATUS    = 'Invalid status property returned from API server:  "%s" expected, "%s" found',
-    ERR_NON_JSON_RESPONSE = 'Server returned %d status, but response is not JSON-encoded.',
+    STATUS_OK   = 'ok',
+    STATUS_FAIL = 'fail',
+    STATUS_ERR  = 'err',
 
-    KEY_STATUS    = 'status',
-    KEY_ERRORS    = 'errors',
-    KEY_EXCEPTION = '_exception';
+    KEY_STATUS  = 'status',
+    KEY_DETAIL  = 'detail';
 
   private
     $_response,
@@ -46,52 +44,81 @@ abstract class JsonApi_Response
 
   /** Generate a response object from the API call response.
    *
-   * @param JsonApi_Http_Response $Response
+   * @param JsonApi_Http_Response $response
    *
    * @return JsonApi_Response
    */
-  static public function factory( JsonApi_Http_Response $Response )
+  static public function factory( JsonApi_Http_Response $response )
   {
-    switch( $Response->getStatus() )
+    try
     {
-      case JsonApi_Http_Response::STATUS_OK:
-        $class = 'JsonApi_Response_Success';
-      break;
+      switch( $response->getStatus() )
+      {
+        case JsonApi_Http_Response::STATUS_OK:
+          $class = 'JsonApi_Response_Success';
+        break;
 
-      case JsonApi_Http_Response::STATUS_BAD_REQUEST:
-        $class = 'JsonApi_Response_Failure';
-      break;
+        case JsonApi_Http_Response::STATUS_BAD_REQUEST:
+          $class = 'JsonApi_Response_Failure';
+        break;
 
-      default:
-        $class = 'JsonApi_Response_Error';
-      break;
+        default:
+          throw new JsonApi_Response_Exception(
+            sprintf(
+              'Unrecognized HTTP status code:  %s (%s).',
+                $response->getStatus(),
+                $response->getStatus(true)
+            ),
+            $response
+          );
+        break;
+      }
+
+      return new $class($response);
     }
+    catch( JsonApi_Response_Exception $e )
+    {
+      $result = new JsonApi_Response_Error($response);
+      $result->attachException($e);
 
-    return new $class($Response);
+      return $result;
+    }
   }
 
   /** Init the class instance.
    *
-   * @param JsonApi_Http_Response $Response
+   * @param JsonApi_Http_Response $response
    *
    * @return void
    * @access protected use factory() to create a new instance.
    *
    * @final Override {@see _initialize()} to customize subclass initialization.
    */
-  final protected function __construct( JsonApi_Http_Response $Response )
+  final protected function __construct( JsonApi_Http_Response $response )
   {
-    $this->_response = $Response;
+    $this->_response = $response;
     $this->_props    = new sfParameterHolder();
 
-    $this->_initialize();
+    /* Decode the JSON-encoded content and assign detail parameters. */
+    $decoded = $this->_decodeJson($response->getContent());
+
+    $key = self::KEY_DETAIL;
+    if( ! empty($decoded->$key) )
+    {
+      $this->getPropertiesObject()->add((array) $decoded->$key);
+    }
+
+    /* Perform subclass-specific initialization. */
+    $this->_initialize($decoded);
   }
 
   /** Post-constructor initialization.  Override this method in subclasses.
    *
+   * @param stdClass $response Decoded JSON response.
+   *
    * @return void
    */
-  protected function _initialize(  )
+  protected function _initialize( stdClass $response )
   {
   }
 
@@ -155,93 +182,19 @@ abstract class JsonApi_Response
     return $this->getPropertiesObject()->has($key);
   }
 
-  /* Note:  __set() and __unset() excluded purposely. */
-
-  /** Converts the response object into an exception and throws it.
+  /** Decodes JSON from a JsonApi response.
    *
-   * @param string $message Custom error message to specify (default is keys
-   *  of $this->errors).
+   * @param string $content
    *
-   * @return void
-   * @throws JsonApi_Response_Exception
+   * @return stdClass
+   * @throws JsonApi_Response_Exception if $content is not well-formed.
    */
-  public function throwException( $message = null )
+  protected function _decodeJson( $content )
   {
-    $errors = (array) $this->getPropertiesObject()->get(self::KEY_ERRORS);
-
-    throw new JsonApi_Response_Exception(
-      is_null($message)
-        ? isset($errors[self::KEY_EXCEPTION])
-            ? $errors[self::KEY_EXCEPTION]
-            : self::ERR_NO_EXCEPTION
-        : (string) $message,
-      $this->getResponseObject()
-    );
-  }
-
-  /** Extracts the JSON-encoded object from the response body and populates the
-   *   properties object.
-   *
-   * @param string $expected Expected value of 'status' in encoded object.
-   *
-   * @return void
-   */
-  protected function _importPropertiesFromResponse( $expected = null )
-  {
-    /* Verify valid JSON content. */
-    if( $decoded = json_decode($this->getResponseObject()->getContent()) )
+    if( ! $decoded = json_decode($content) )
     {
-      /* Validate status value. */
-      if( empty($decoded->{self::KEY_STATUS}) )
-      {
-        $decoded = $this->_genExceptionResponse(self::ERR_NO_STATUS);
-      }
-      elseif( $expected and $decoded->{self::KEY_STATUS} != $expected )
-      {
-        $decoded = $this->_genExceptionResponse(
-          sprintf(
-            self::ERR_INVALID_STATUS,
-              $expected,
-              $decoded->{self::KEY_STATUS}
-          )
-        );
-      }
-    }
-    else
-    {
-      $decoded = $this->_genExceptionResponse(
-        sprintf(
-          self::ERR_NON_JSON_RESPONSE,
-            $this->getResponseObject()->getStatus()
-        )
-      );
     }
 
-    $decoded = (array) $decoded;
-    if( $decoded[self::KEY_STATUS] == JsonApi_Base::STATUS_ERROR )
-    {
-      $decoded[self::KEY_ERRORS] =
-        isset($decoded[self::KEY_ERRORS])
-          ? (array) $decoded[self::KEY_ERRORS]
-          : array();
-    }
-
-    $this->getPropertiesObject()->add($decoded);
-  }
-
-  /** Generates a simulated exception response.
-   *
-   * @param string $message The exception message.
-   *
-   * @return array
-   */
-  protected function _genExceptionResponse( $message )
-  {
-    return array(
-      'status'  => JsonApi_Base::STATUS_ERROR,
-      'errors'  => array(
-        '_exception' => (string) $message
-      )
-    );
+    return $decoded;
   }
 }

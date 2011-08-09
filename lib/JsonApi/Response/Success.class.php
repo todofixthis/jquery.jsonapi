@@ -35,8 +35,7 @@ class JsonApi_Response_Success extends JsonApi_Response
    * @return void
    * @throws JsonApi_Response_Exception if the response is somehow malformed.
    */
-  protected function _initialize(  )
+  protected function _initialize( stdClass $response )
   {
-    $this->_importPropertiesFromResponse(JsonApi_Base::STATUS_OK);
   }
 }

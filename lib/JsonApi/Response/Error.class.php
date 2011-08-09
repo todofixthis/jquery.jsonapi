@@ -32,18 +32,12 @@ class JsonApi_Response_Error extends JsonApi_Response
 {
   /** Init the response object.
    *
+   * @param stdClass $response
+   *
    * @return void
    * @throws JsonApi_Response_Exception
    */
-  protected function _initialize(  )
+  protected function _initialize( stdClass $response )
   {
-    $Response = $this->getResponseObject();
-    $this->getPropertiesObject()->add($this->_genExceptionResponse(
-      sprintf(
-        'Got unexpected HTTP status %d ("%s")',
-          $Response->getStatus(),
-          $Response->getStatus(true)
-      )
-    ));
   }
 }

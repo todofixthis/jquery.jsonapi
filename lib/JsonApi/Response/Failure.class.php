@@ -31,37 +31,13 @@
  */
 class JsonApi_Response_Failure extends JsonApi_Response
 {
-  const
-    ERR_BAD_PARAMETERS = 'Bad parameters: [%s]';
-
-  /** Converts the response object into an exception and throws it.
-   *
-   * @param string $message Custom error message to specify (default is keys
-   *  of $this->errors).
-   *
-   * @return void
-   * @throws JsonApi_Response_Exception
-   */
-  public function throwException( $message = null )
-  {
-    $message =
-      is_null($message)
-        ? sprintf(
-            self::ERR_BAD_PARAMETERS,
-            implode(', ', array_keys($this->__get(self::KEY_ERRORS)))
-          )
-        : (string) $message;
-
-    throw new JsonApi_Response_Exception($message, $this->getResponseObject());
-  }
-
   /** Init the response object.
    *
+   * @param stdClass $response
+   *
    * @return void
-   * @throws JsonApi_Response_Exception if the response is somehow malformed.
    */
-  protected function _initialize(  )
+  protected function _initialize( stdClass $response )
   {
-    $this->_importPropertiesFromResponse(JsonApi_Base::STATUS_ERROR);
   }
 }
