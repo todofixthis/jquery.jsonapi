@@ -39,14 +39,13 @@ class JsonApi_Actions extends sfActions
 
     DEBUG = 'Debug',
 
-    KEY_ARRAY_INVALID = 'array_invalid',
     ERR_ARRAY_INVALID = 'Array value not allowed.';
 
   /** Require POST or dev environment.
    *
    * @return void Automatically forwards to the 404 page if not valid.
    */
-  protected function _requirePost(  )
+  protected function requirePost(  )
   {
     $this->forward404Unless(
           $this->getRequest()->getMethod() == sfWebRequest::POST
@@ -65,9 +64,9 @@ class JsonApi_Actions extends sfActions
    *
    * @return mixed
    */
-  protected function _getParam( $key, $validators = array(), $allowArrayValue = false )
+  protected function getParam( $key, $validators = array(), $allowArrayValue = false )
   {
-    return $this->_validate(
+    return $this->validate(
       $key,
       $this->getRequest()->getParameter($key),
       $validators,
@@ -84,7 +83,7 @@ class JsonApi_Actions extends sfActions
    *
    * @return mixed
    */
-  protected function _validate( $name, $var, array $validators, $allowArrayValue = false )
+  protected function validate( $name, $var, array $validators, $allowArrayValue = false )
   {
     if( is_array($var) )
     {
@@ -93,7 +92,7 @@ class JsonApi_Actions extends sfActions
         $validated = array();
         foreach( $var as $subKey => $subVal )
         {
-          $validated[$subKey] = $this->_validate(
+          $validated[$subKey] = $this->validate(
             "{$name}[{$subKey}]",
             $subVal,
             $validators,
@@ -106,10 +105,7 @@ class JsonApi_Actions extends sfActions
       {
         $this->_setError(
           $name,
-          $this->_getValidatorMessage(
-            self::KEY_ARRAY_INVALID,
-            self::ERR_ARRAY_INVALID
-          )
+          self::ERR_ARRAY_INVALID
         );
         return null;
       }
@@ -124,7 +120,7 @@ class JsonApi_Actions extends sfActions
         }
         catch( sfValidatorError $e )
         {
-          $this->_setError($name, $e->getMessage());
+          $this->setError($name, $e->getMessage());
           return null;
         }
       }
@@ -137,7 +133,7 @@ class JsonApi_Actions extends sfActions
    *
    * @return bool
    */
-  protected function _hasErrors(  )
+  protected function hasErrors(  )
   {
     return ! empty($this->errors);
   }
@@ -146,9 +142,9 @@ class JsonApi_Actions extends sfActions
    *
    * @return array
    */
-  protected function _getErrors(  )
+  protected function getErrors(  )
   {
-    return $this->_hasErrors() ? (array) $this->errors : array();
+    return $this->hasErrors() ? (array) $this->errors : array();
   }
 
   /** Sets an error message.
@@ -158,7 +154,7 @@ class JsonApi_Actions extends sfActions
    *
    * @return void
    */
-  protected function _setError( $key, $message )
+  protected function setError( $key, $message )
   {
     if( ! isset($this->errors) )
     {
@@ -174,11 +170,11 @@ class JsonApi_Actions extends sfActions
    *
    * @return void
    */
-  protected function _setErrors( array $errors )
+  protected function setErrors( array $errors )
   {
     foreach( $errors as $key => $message )
     {
-      $this->_setError($key, $message);
+      $this->setError($key, $message);
     }
   }
 
@@ -188,7 +184,7 @@ class JsonApi_Actions extends sfActions
    *
    * @return string
    */
-  protected function _success( array $messages = array() )
+  protected function success( array $messages = array() )
   {
     return $this->_renderJson(array_merge(
       array('status' => self::STATUS_OK),
@@ -200,13 +196,13 @@ class JsonApi_Actions extends sfActions
    *
    * @return string
    */
-  protected function _error(  )
+  protected function error(  )
   {
     $this->getResponse()->setStatusCode(400);
 
     return $this->_renderJson(array(
       'status'  => self::STATUS_ERROR,
-      'errors'  => $this->_getErrors()
+      'errors'  => $this->getErrors()
     ));
   }
 
