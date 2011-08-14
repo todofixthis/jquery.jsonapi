@@ -46,6 +46,34 @@ class JsonApi_Utility
     return self::KEY_PREFIX . $key;
   }
 
+  /** Returns whether a variable is iterable.
+   *
+   * An iterable variable meets one of these criteria:
+   * - Is an array.
+   * - Is a stdClass instance.
+   * - Is an instance of a class that implements the Iterable interface.
+   *
+   * @param mixed $var
+   *
+   * @return bool
+   */
+  static public function isIterable( $var )
+  {
+    return
+    (
+      is_array($var)
+      or
+      (
+        is_object($var)
+        and
+        (
+              class_implements($var, 'Iterable')
+          or  (get_class($var) == 'stdClass')
+        )
+      )
+    );
+  }
+
   /** Normalize an array of request parameters.
    *
    *  - Convert all values to strings (keys are ignored because of the way PHP
@@ -77,9 +105,7 @@ class JsonApi_Utility
     }
 
     /* Ensure that key order is not important. */
-    ksort($copy);
-
-    return $copy;
+    return array_map(array(__CLASS__, '_sortify'), $copy);
   }
 
   /** Used by e.g., array_walk_recursive() to convert all values in an array to
@@ -94,6 +120,39 @@ class JsonApi_Utility
    */
   static public function _stringify( &$val, $key )
   {
-    $val = (string) $val;
+    if( self::isIterable($val) )
+    {
+      $copy = array();
+      foreach( $val as $field => $value )
+      {
+        $copy[$field] = $value;
+      }
+      $val = $copy;
+    }
+    else
+    {
+      $val = (string) $val;
+    }
+  }
+
+  /** Sorts an array and all of its sub-arrays by key.
+   *
+   * @param array $array
+   *
+   * @return array *copy*
+   */
+  static public function _sortify( array $array )
+  {
+    ksort( $array );
+
+    foreach( $array as &$value )
+    {
+      if( is_array($value) )
+      {
+        $value = self::_sortify($value);
+      }
+    }
+
+    return $array;
   }
 }
