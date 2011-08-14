@@ -216,12 +216,13 @@ class JsonApi_Actions extends sfActions
   {
     if( sfConfig::get('sf_environment') == 'dev' )
     {
+      $root = sfContext::getInstance()->getConfiguration()
+        ->getPluginConfiguration('sfJwtJsonApiPlugin')
+          ->getRootDir() . '/modules/jsonapi/templates/';
+
       /* Using a template so that the sfWebDebugToolbar can render as well. */
-      $this->setTemplate(
-        sfContext::getInstance()->getConfiguration()
-          ->getPluginConfiguration('sfJwtJsonApiPlugin')
-            ->getRootDir() . '/modules/jsonapi/templates/_api'
-      );
+      $this->setTemplate($root . '_api');
+      $this->setLayout($root . 'layout');
 
       $this->result = $response;
 
