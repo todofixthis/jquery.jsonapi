@@ -72,4 +72,18 @@ class Test_Browser_Plugin_JsonApiResponse extends Test_Browser_Plugin
   {
     return get_class($this->getEncapsulatedObject());
   }
+
+  /** Convenience method for retrieving a sorted array of error keys, used to
+   *    verify that all the correct error messages were returned without having
+   *    to worry about the order.
+   *
+   * This only means something when the response is a failure response.
+   *
+   * @return array
+   */
+  public function getErrorKeys(  )
+  {
+    $key = JsonApi_Response_Failure::KEY_ERRORS;
+    return array_keys((array) $this->getEncapsulatedObject()->$key);
+  }
 }
