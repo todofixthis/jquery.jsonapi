@@ -30,6 +30,10 @@
  */
 abstract class JsonApi_Base
 {
+  protected
+    /** @var JsonApi_Http_Client */
+    $_client;
+
   static private
 
     /** @kludge PHP 5.2 does not support late static binding, but we need a way
@@ -43,16 +47,44 @@ abstract class JsonApi_Base
      */
     $_instances = array();
 
-  /** Returns the HTTP client for the API call.
+  /** Returns the HTTP client for the API call if one has not already been set.
    *
-   * Most every subclass will `return new JsonApi_Http_Client_Zend($hostname)`,
-   *  where $hostname is the hostname of the JsonApi server for that service.
+   * Subclasses should override this to specify default parameters such as
+   *  hostname or custom HTTP client subclass.
+   *
+   * @return JsonApi_Http_Client
+   */
+  public function getDefaultHttpClient(  )
+  {
+    return new JsonApi_Http_Client_Zend();
+  }
+
+  /** Returns the HTTP client for the API call.
    *
    * @return JsonApi_Http_Client
    */
   public function getHttpClient(  )
   {
-    return new JsonApi_Http_Client_Zend();
+    if( ! $this->_client )
+    {
+      $this->_client = $this->getDefaultHttpClient();
+    }
+
+    return $this->_client;
+  }
+
+  /** Modifier for the HTTP client for the API call.
+   *
+   * This is generally only used to inject a mock adapter for testing.
+   *
+   * @param JsonApi_Http_Client $client
+   *
+   * @return JsonApi_Base($this)
+   */
+  public function setHttpClient( JsonApi_Http_Client $client )
+  {
+    $this->_client = $client;
+    return $this;
   }
 
   /** Generates/returns an API instance for a given class name.
