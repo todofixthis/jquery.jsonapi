@@ -143,7 +143,7 @@ class JsonApi_Utility
    */
   static public function _sortify( array $array )
   {
-    ksort( $array );
+    uksort($array, 'strnatcasecmp');
 
     foreach( $array as &$value )
     {
