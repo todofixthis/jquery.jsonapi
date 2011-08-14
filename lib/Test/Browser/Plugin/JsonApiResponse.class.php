@@ -84,6 +84,10 @@ class Test_Browser_Plugin_JsonApiResponse extends Test_Browser_Plugin
   public function getErrorKeys(  )
   {
     $key = JsonApi_Response_Failure::KEY_ERRORS;
-    return array_keys((array) $this->getEncapsulatedObject()->$key);
+
+    $errors = array_keys((array) $this->getEncapsulatedObject()->$key);
+    sort($errors);
+
+    return $errors;
   }
 }
