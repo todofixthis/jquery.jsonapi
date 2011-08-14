@@ -27,6 +27,8 @@
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage lib.jsonapi.actions
+ *
+ * @todo Relocate to /lib/JsonApi.
  */
 class JsonApi_Actions extends sfActions
 {
@@ -160,6 +162,11 @@ class JsonApi_Actions extends sfActions
    * @param mixed                   $val
    * @param array(sfValidatorBase)  $validators
    * @param bool|int                $array
+   *
+   * @todo Refactor $array functionality into separate validator.
+   * @todo Do away with int $array value; if $val is an array, assume that each
+   *  element should be sent to the validator array (add additional array
+   *  validators to $validators to validate sub-sub-elements).
    */
   private function _validate( $key, $val, array $validators, $array )
   {
