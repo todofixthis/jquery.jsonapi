@@ -26,7 +26,7 @@
  * @author Phoenix Zerin <phoenix.zerin@jwt.com>
  *
  * @package sfJwtJsonApiPlugin
- * @subpackage lib.jsonapi.actions
+ * @subpackage lib.jsonapi
  */
 class JsonApi_Actions extends sfActions
 {
@@ -160,6 +160,11 @@ class JsonApi_Actions extends sfActions
    * @param mixed                   $val
    * @param array(sfValidatorBase)  $validators
    * @param bool|int                $array
+   *
+   * @todo Refactor $array functionality into separate validator.
+   * @todo Do away with int $array value; if $val is an array, assume that each
+   *  element should be sent to the validator array (add additional array
+   *  validators to $validators to validate sub-sub-elements).
    */
   private function _validate( $key, $val, array $validators, $array )
   {
@@ -221,7 +226,7 @@ class JsonApi_Actions extends sfActions
           ->getRootDir() . '/modules/jsonapi/templates/';
 
       /* Using a template so that the sfWebDebugToolbar can render as well. */
-      $this->setTemplate($root . '_api');
+      $this->setTemplate($root . 'api');
       $this->setLayout($root . 'layout');
 
       $this->result = $response;

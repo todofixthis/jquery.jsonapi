@@ -67,7 +67,7 @@ class JsonApi_Utility
         is_object($var)
         and
         (
-              class_implements($var, 'Iterable')
+              class_implements($var, 'Traversable')
           or  (get_class($var) == 'stdClass')
         )
       )
@@ -105,7 +105,7 @@ class JsonApi_Utility
     }
 
     /* Ensure that key order is not important. */
-    return array_map(array(__CLASS__, '_sortify'), $copy);
+    return self::_sortify($copy);
   }
 
   /** Used by e.g., array_walk_recursive() to convert all values in an array to
@@ -125,7 +125,7 @@ class JsonApi_Utility
       $copy = array();
       foreach( $val as $field => $value )
       {
-        $copy[$field] = $value;
+        $copy[$field] = (string) $value;
       }
       $val = $copy;
     }
