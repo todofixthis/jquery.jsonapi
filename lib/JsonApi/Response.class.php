@@ -78,6 +78,12 @@ abstract class JsonApi_Response
     }
     catch( JsonApi_Exception $e )
     {
+      /* Note that we only catch JsonApi_Exceptions; an error response is only
+       *  appropriate if the request succeeded, but something exploded on the
+       *  server.  If JsonApi fails to send the request, that is a super-mega
+       *  exception case and must not be caught by JsonApi.
+       */
+
       $result = new JsonApi_Response_Error($response);
       $result->attachException($e);
 
@@ -130,6 +136,18 @@ abstract class JsonApi_Response
     }
   }
 
+  /** Returns whether this request succeeded.
+   *
+   * @return bool
+   */
+  public function isSuccess(  )
+  {
+    return (
+          isset($this->_decoded->status)
+      &&  ($this->_decoded->status == self::STATUS_OK)
+    );
+  }
+
   /** Accessor for $_response.
    *
    * @return JsonApi_Http_Response
@@ -176,6 +194,17 @@ abstract class JsonApi_Response
   public function getAllProperties(  )
   {
     return $this->getPropertiesObject()->getAll();
+  }
+
+  /** Throws an exception based on the response.
+   *
+   * @return void
+   * @throws JsonApi_Response_RethrownException
+   * @throws LogicException if the subclass isn't exceptional.
+   */
+  public function throwException(  )
+  {
+    throw new LogicException('Not supported.');
   }
 
   /** Generic accessor for $_props.

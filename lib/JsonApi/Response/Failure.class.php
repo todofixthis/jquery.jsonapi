@@ -56,4 +56,22 @@ class JsonApi_Response_Failure extends JsonApi_Response
     $props = $this->getPropertiesObject();
     $props->set(self::KEY_ERRORS, (array) $props->get(self::KEY_ERRORS));
   }
+
+  /** Throws an exception based off the response.
+   *
+   * @return void
+   * @throws JsonApi_Response_RethrownException
+   */
+  public function throwException(  )
+  {
+    $key = self::KEY_ERRORS;
+
+    throw new JsonApi_Response_RethrownException(
+      $this->getResponseObject(),
+      new JsonApi_Response_Exception(sprintf(
+        'Bad request parameters (%s).',
+          implode(', ', array_keys($this->$key))
+      ))
+    );
+  }
 }

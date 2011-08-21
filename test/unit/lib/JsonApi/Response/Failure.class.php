@@ -55,6 +55,22 @@ class JsonApi_Response_FailureTest
     );
   }
 
+  public function testThrowException()
+  {
+    $response = $this->_failure($this->_errors);
+
+    try
+    {
+      $response->throwException();
+      $this->fail(
+        'Expected JsonApi_Response_RethrownException when calling throwException().'
+      );
+    }
+    catch( JsonApi_Response_RethrownException $e )
+    {
+    }
+  }
+
   /** Malformed responses get converted to JsonApi_Response_Error.
    *
    * @see JsonApi_Response_ErrorTest

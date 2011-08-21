@@ -47,7 +47,7 @@ class JsonApi_Response_Error extends JsonApi_Response
 
   /** Attach an exception to the object.
    *
-   * @param JsonApi_Exception $exception
+   * @param JsonApi_Exception $exception {@see factory()}
    *
    * @return JsonApi_Response_Error($this)
    */

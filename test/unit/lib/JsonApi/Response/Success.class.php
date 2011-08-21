@@ -54,6 +54,22 @@ class JsonApi_Response_SuccessTest extends Test_Case_Unit_JsonApi_Response
     );
   }
 
+  public function testThrowException()
+  {
+    $response = $this->_success($this->_detail);
+
+    try
+    {
+      $response->throwException();
+      $this->fail(
+        'Expected LogicException when calling throwException on a success response.'
+      );
+    }
+    catch( LogicException $e )
+    {
+    }
+  }
+
   /** Malformed responses get converted to JsonApi_Response_Error.
    *
    * @see JsonApi_Response_ErrorTest
