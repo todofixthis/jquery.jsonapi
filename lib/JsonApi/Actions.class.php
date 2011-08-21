@@ -51,20 +51,15 @@ class JsonApi_Actions extends sfActions
    *
    * @param string    $key
    * @param array     $validators
-   * @param bool|int  $allowArrayValue
-   *  - true:   array values are allowed.
-   *  - false:  array values are not allowed.
-   *  - (int):  array values allowed, but only this many levels of nesting.
    *
    * @return mixed
    */
-  protected function getParam( $key, $validators = array(), $allowArrayValue = false )
+  protected function getParam( $key, $validators = array() )
   {
     return $this->_validate(
       $key,
       $this->getRequest()->getParameter($key),
-      $validators,
-      $allowArrayValue
+      $validators
     );
   }
 
@@ -159,56 +154,24 @@ class JsonApi_Actions extends sfActions
    * @param string                  $key
    * @param mixed                   $val
    * @param array(sfValidatorBase)  $validators
-   * @param bool|int                $array
-   *
-   * @todo Refactor $array functionality into separate validator.
-   * @todo Do away with int $array value; if $val is an array, assume that each
-   *  element should be sent to the validator array (add additional array
-   *  validators to $validators to validate sub-sub-elements).
    */
-  private function _validate( $key, $val, array $validators, $array )
+  private function _validate( $key, $val, array $validators )
   {
-    if( is_array($val) )
+    /* @var $validator sfValidatorBase */
+    foreach( (array) $validators as $validator )
     {
-      if( $array > 0 )
+      try
       {
-        /* Validate all elements of $val using the same set of validators. */
-        $validated = array();
-        foreach( $val as $subKey => $subVal )
-        {
-          $validated[$subKey] = $this->_validate(
-            "{$key}[{$subKey}]",
-            $subVal,
-            $validators,
-            (is_int($array) ? ($array - 1) : (bool) $array)
-          );
-        }
-        return $validated;
+        $val = $validator->clean($val);
       }
-      else
+      catch( sfValidatorError $e )
       {
-        $this->setError($key, self::ERR_ARRAY_INVALID);
+        $this->setError($key, $e->getMessage());
         return null;
       }
     }
-    else
-    {
-      /* @var $validator sfValidatorBase */
-      foreach( (array) $validators as $validator )
-      {
-        try
-        {
-          $val = $validator->clean($val);
-        }
-        catch( sfValidatorError $e )
-        {
-          $this->setError($key, $e->getMessage());
-          return null;
-        }
-      }
 
-      return $val;
-    }
+    return $val;
   }
 
   /** Renders an array as a JSON string.
