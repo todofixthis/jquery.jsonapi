@@ -35,7 +35,8 @@ class JsonApi_Http_Client_Mock extends JsonApi_Http_Client
     STATUS_NOT_FOUND  = 404;
 
   protected
-    $_content = array();
+    $_content   = array(),
+    $_requests  = array();
 
   /** Seeds the client with a simulated server response.
    *
@@ -79,7 +80,9 @@ class JsonApi_Http_Client_Mock extends JsonApi_Http_Client
    */
   public function fetch( $method, $path, array $params = array() )
   {
-    $key = $this->_genContentKey($path, $params);
+
+    $key                =
+    $this->_requests[]  = $this->_genContentKey($path, $params);
 
     if( isset($this->_content[$method][$key]) )
     {
@@ -111,6 +114,16 @@ class JsonApi_Http_Client_Mock extends JsonApi_Http_Client
   public function getAll( $method = self::METHOD_ANY )
   {
     return (isset($this->_content[$method]) ? $this->_content[$method] : null);
+  }
+
+  /** Returns all requset URLs that were sent to this client.
+   *
+   * @return array(url) Note that there is no method information in the array;
+   *  it only contains URL strings.
+   */
+  public function getRequests(  )
+  {
+    return $this->_requests;
   }
 
   /** Generates a content key for a path/params combo.

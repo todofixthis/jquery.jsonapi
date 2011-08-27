@@ -113,6 +113,47 @@ abstract class JsonApi_Base
     return self::$_instances[$class];
   }
 
+  /** Returns the URL that would be called by invoking a particular API call.
+   *
+   * @param string  $classname
+   * @param string  $method
+   * @param array   $args
+   *
+   * @return string(url)
+   */
+  static public function getUrlFor( $classname, $method, array $args = array() )
+  {
+    $instance = self::getInstance($classname);
+    $client   = $instance->getHttpClient();
+
+    try
+    {
+      /* Inject mock HTTP adapter. */
+      $mock = new JsonApi_Http_Client_Mock($client->getHostname());
+      $instance->setHttpClient($mock);
+
+      /* This will generate a 404 response, but that's OK; we just need to pull
+       *  out the request URL.
+       */
+      call_user_func_array(array($classname, $method), $args);
+
+      $urls = $mock->getRequests();
+      $url = reset($urls);
+    }
+    catch( Exception $e )
+    {
+      /* Do not leave mock adapter installed. */
+      $instance->setHttpClient($client);
+      throw $e;
+    }
+
+    /* Restore HTTP client. */
+    $instance->setHttpClient($client);
+
+    /* And we're done. */
+    return $url;
+  }
+
   /** Fire off an API call and return the JSON-decoded response.
    *
    * @param string $class Class name of the API instance to retrieve.
