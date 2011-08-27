@@ -113,13 +113,13 @@ abstract class JsonApi_Base
     return self::$_instances[$class];
   }
 
-  /** Returns the URL that would be called by invoking a particular API call.
+  /** Returns the URI that would be called by invoking a particular API call.
    *
    * @param string  $classname
    * @param string  $method
    * @param array   $args
    *
-   * @return string(url)
+   * @return Zend_Uri_Http
    */
   static public function getUrlFor( $classname, $method, array $args = array() )
   {
