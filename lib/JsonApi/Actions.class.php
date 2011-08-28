@@ -135,10 +135,18 @@ class JsonApi_Actions extends sfActions
 
   /** Sends error response.
    *
+   * @param array $errors Additional error messages to be included in the
+   *  response detail (convenience for calling {@see setErrors()}.
+   *
    * @return string
    */
-  protected function error(  )
+  protected function error( array $errors = array() )
   {
+    if( $errors )
+    {
+      $this->setErrors($errors);
+    }
+
     $this->getResponse()->setStatusCode(400);
 
     return $this->_renderJson(array(
