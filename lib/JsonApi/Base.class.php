@@ -121,7 +121,7 @@ abstract class JsonApi_Base
    *
    * @return Zend_Uri_Http
    */
-  static public function getUrlFor( $classname, $method, array $args = array() )
+  static public function getUriFor( $classname, $method, array $args = array() )
   {
     $instance = self::getInstance($classname);
     $client   = $instance->getHttpClient();
@@ -152,6 +152,34 @@ abstract class JsonApi_Base
 
     /* And we're done. */
     return $url;
+  }
+
+  /** Similar to {@see getUrlFor()}, except the resulting URL is automatically
+   *    frontend_dev.php'd.
+   *
+   * @param string  $classname
+   * @param string  $method
+   * @param array   $args
+   * @param string  $application  Name of the application to inject.
+   *
+   * @return Zend_Uri_Http
+   */
+  static public function getDebugUriFor(
+          $classname,
+          $method,
+    array $args         = array(),
+          $application  = 'frontend'
+  )
+  {
+    $uri = self::getUriFor($classname, $method, $args);
+
+    $uri->setPath(sprintf(
+      '/%s_dev.php/%s',
+        $application,
+        ltrim($uri->getPath(), '/')
+    ));
+
+    return $uri;
   }
 
   /** Fire off an API call and return the JSON-decoded response.

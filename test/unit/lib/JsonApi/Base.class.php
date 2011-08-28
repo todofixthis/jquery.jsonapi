@@ -44,29 +44,64 @@ class JsonApi_BaseTest extends Test_Case_Unit
         ->setHostname($this->_hostname);
   }
 
-  public function testGetUrlFor()
+  public function testGetUriFor()
   {
     $timezone = 'America/DFW';
 
+    $uri = JsonApi_Base::getUriFor($this->_class, 'getTime', array($timezone));
+
+    $this->assertInstanceOf(
+      'Zend_Uri_Http',
+      $uri,
+      'Expected result to have the correct type.'
+    );
+
     $this->assertEquals(
       'http://localhost/time/get?timezone=' . urlencode($timezone),
-      JsonApi_Base::getUrlFor($this->_class, 'getTime', array($timezone)),
-      'Expected correct URL reported.'
+      $uri->getUri(),
+      'Expected correct URI reported.'
     );
   }
 
-  public function testGetUrlForRequiresJsonApiClassname()
+  public function testGetUriForRequiresJsonApiClassname()
   {
     try
     {
-      JsonApi_Base::getUrlFor('sfContext', 'getInstance');
+      JsonApi_Base::getUriFor('sfContext', 'getInstance');
       $this->fail(
-        'Expected InvalidArgumentException when invoking getUrlFor() on a non-JsonApi class.'
+        'Expected InvalidArgumentException when invoking on a non-JsonApi class.'
       );
     }
     catch( InvalidArgumentException $e )
     {
     }
+  }
+
+  public function testGetDebugUriFor()
+  {
+    $timezone = 'America/DFW';
+
+    $uri = JsonApi_Base::getDebugUriFor(
+      $this->_class,
+      'getTime',
+      array($timezone),
+      'service'
+    );
+
+    $this->assertInstanceOf(
+      'Zend_Uri_Http',
+      $uri,
+      'Expected result to have the correct type.'
+    );
+
+    $this->assertEquals(
+      sprintf(
+        'http://localhost/service_dev.php/time/get?timezone=%s',
+          urlencode($timezone)
+      ),
+      $uri->getUri(),
+      'Expected correct URI reported.'
+    );
   }
 }
 
