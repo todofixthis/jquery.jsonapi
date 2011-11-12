@@ -31,9 +31,7 @@
 class JsonApi_Actions extends sfActions
 {
   const
-    DEBUG = 'Debug',
-
-    ERR_ARRAY_INVALID = 'Array value not allowed.';
+    DEBUG = 'Debug';
 
   /** Require POST or dev environment.
    *
@@ -159,14 +157,16 @@ class JsonApi_Actions extends sfActions
 
   /** Validates an incoming parameter.
    *
-   * @param string                  $key
-   * @param mixed                   $val
-   * @param array(sfValidatorBase)  $validators
+   * @param string            $key
+   * @param mixed             $val
+   * @param sfValidatorBase[] $validators
+   *
+   * @return mixed
    */
   private function _validate( $key, $val, array $validators )
   {
     /* @var $validator sfValidatorBase */
-    foreach( (array) $validators as $validator )
+    foreach( $validators as $validator )
     {
       try
       {
