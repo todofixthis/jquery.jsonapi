@@ -23,7 +23,7 @@
 
 /** A response from the JsonApi server that we can't make heads or tails of.
  *
- * @author Phoenix Zerin <phoenix.zerin@jwt.com>
+ * @author Phoenix Zerin <phoenix@todofixthis.com>
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage lib.jsonapi.response

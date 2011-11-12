@@ -24,7 +24,7 @@
 /** Interacts with JPUP's Test_Browser to return the HTTP response as a
  *    JsonApi_Response object.
  *
- * @author Phoenix Zerin <phoenix.zerin@jwt.com>
+ * @author Phoenix Zerin <phoenix@todofixthis.com>
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage lib.test.browser.plugin

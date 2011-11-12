@@ -26,7 +26,7 @@
  * Note that we are using a template instead of sfActions->renderText() so that
  *  we can also render the sfWebDebugToolbar.
  *
- * @author Phoenix Zerin <phoenix.zerin@jwt.com>
+ * @author Phoenix Zerin <phoenix@todofixthis.com>
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage modules.jsonapi.templates

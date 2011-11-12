@@ -23,7 +23,7 @@
 
 /** Unit tests for JsonApi_Utility.
  *
- * @author Phoenix Zerin <phoenix.zerin@jwt.com>
+ * @author Phoenix Zerin <phoenix@todofixthis.com>
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage test.lib.jsonapi
@@ -123,7 +123,7 @@ class JsonApi_UtilityTest extends Test_Case_Unit
 
 /** Used to test JsonApi_Utility::_stringify().
  *
- * @author Phoenix Zerin <phoenix.zerin@jwt.com>
+ * @author Phoenix Zerin <phoenix@todofixthis.com>
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage test.lib.jsonapi

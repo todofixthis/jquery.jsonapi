@@ -24,7 +24,7 @@
 /** An exception that was caught by JsonApi_Response::factory(), but rethrown
  *    in the application code.
  *
- * @author Phoenix Zerin <phoenix.zerin@jwt.com>
+ * @author Phoenix Zerin <phoenix@todofixthis.com>
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage lib.jsonapi.response

@@ -1,7 +1,7 @@
 <?php
 /** Unit tests for JsonApi_Http_Client_Mock.
  *
- * @author Phoenix Zerin <phoenix.zerin@jwt.com>
+ * @author Phoenix Zerin <phoenix@todofixthis.com>
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage test.lib.jsonapi.http.client

@@ -24,7 +24,7 @@
 /** An Exception indicating that something went wrong when sending the request
  *   to the server.
  *
- * @author Phoenix Zerin <phoenix.zerin@jwt.com>
+ * @author Phoenix Zerin <phoenix@todofixthis.com>
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage lib.jsonapi.http.client

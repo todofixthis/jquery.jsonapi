@@ -23,7 +23,7 @@
 
 /** A standardized response from a JsonApi_Http_Client.
  *
- * @author Phoenix Zerin <phoenix.zerin@jwt.com>
+ * @author Phoenix Zerin <phoenix@todofixthis.com>
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage lib.jsonapi.http

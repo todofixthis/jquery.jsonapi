@@ -4,7 +4,7 @@
  *
  * @package    jsonapi-tester
  * @subpackage api
- * @author     Phoenix Zerin <phoenix.zerin@jwt.com>
+ * @author     Phoenix Zerin <phoenix@todofixthis.com>
  */
 class jsonapi_testActions extends JsonApi_Actions
 {

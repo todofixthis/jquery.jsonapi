@@ -23,7 +23,7 @@
 
 /** A mock HTTP client, used to simulate server responses for testing.
  *
- * @author Phoenix Zerin <phoenix.zerin@jwt.com>
+ * @author Phoenix Zerin <phoenix@todofixthis.com>
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage lib.jsonapi.http.client

@@ -1,7 +1,7 @@
 <?php
 /** Functional tests for /jsonapi_test/basic.
  *
- * @author Phoenix Zerin <phoenix.zerin@jwt.com>
+ * @author Phoenix Zerin <phoenix@todofixthis.com>
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage test.api

@@ -24,7 +24,7 @@
 /** A response from the JsonApi server indicating that one or more of the
  *   parameters it received were invalid or malformed.
  *
- * @author Phoenix Zerin <phoenix.zerin@jwt.com>
+ * @author Phoenix Zerin <phoenix@todofixthis.com>
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage lib.jsonapi.response

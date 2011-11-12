@@ -23,7 +23,7 @@
 
 /** Unit tests for JsonApi_Base.
  *
- * @author Phoenix Zerin <phoenix.zerin@jwt.com>
+ * @author Phoenix Zerin <phoenix@todofixthis.com>
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage test.lib.jsonapi

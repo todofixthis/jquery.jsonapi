@@ -24,7 +24,7 @@
 /** An Exception indicating that something is wrong with the response we
  *   received from the JsonApi server.
  *
- * @author Phoenix Zerin <phoenix.zerin@jwt.com>
+ * @author Phoenix Zerin <phoenix@todofixthis.com>
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage lib.jsonapi.response

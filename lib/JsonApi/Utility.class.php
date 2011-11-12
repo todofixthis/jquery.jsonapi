@@ -24,7 +24,7 @@
 /** Provides miscellaneous functions that aren't specialized enough to fit with
  *    any existing class.
  *
- * @author Phoenix Zerin <phoenix.zerin@jwt.com>
+ * @author Phoenix Zerin <phoenix@todofixthis.com>
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage lib.jsonapi

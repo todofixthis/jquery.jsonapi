@@ -23,7 +23,7 @@
 
 /** A wrapper for Zend_Http_Client for use by JsonApi.
  *
- * @author Phoenix Zerin <phoenix.zerin@jwt.com>
+ * @author Phoenix Zerin <phoenix@todofixthis.com>
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage lib.jsonapi.http.client

@@ -25,7 +25,7 @@
  *   be able to catch any JsonApi-specific exception without having to resort to
  *   `catch( Exception $e )`.
  *
- * @author Phoenix Zerin <phoenix.zerin@jwt.com>
+ * @author Phoenix Zerin <phoenix@todofixthis.com>
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage lib.jsonapi

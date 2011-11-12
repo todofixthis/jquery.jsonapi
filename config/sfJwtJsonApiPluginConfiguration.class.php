@@ -23,7 +23,7 @@
 
 /** Initialization for the sfJwtJsonApiPlugin plugin.
  *
- * @author Phoenix Zerin <phoenix.zerin@jwt.com>
+ * @author Phoenix Zerin <phoenix@todofixthis.com>
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage config

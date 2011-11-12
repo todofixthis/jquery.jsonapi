@@ -2,7 +2,7 @@
 /** Unit tests for JsonApi_Response_Failure and by extension,
  *    JsonApi_Response::factory().
  *
- * @author Phoenix Zerin <phoenix.zerin@jwt.com>
+ * @author Phoenix Zerin <phoenix@todofixthis.com>
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage test.lib.jsonapi.response

@@ -149,7 +149,7 @@
  *  and behavior of $.jsonapi() are identical to those of $.fn.jsonapi(), sans
  *  anything related to HTML elements.
  *
- * @author Phoenix Zerin <phoenix.zerin@jwt.com>
+ * @author Phoenix Zerin <phoenix@todofixthis.com>
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage web
