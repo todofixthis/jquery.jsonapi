@@ -30,7 +30,15 @@
  */
 class sfJwtJsonApiPluginConfiguration extends sfPluginConfiguration
 {
-  /** @todo Check for Zend Framework. */
+  /** Initializes the plugin.
+   *
+   * This method is called after the plugin's classes have been added to
+   *  sfAutoload.
+   *
+   * @return void
+   *
+   * @todo Check for Zend Framework.
+   */
   public function initialize(  )
   {
   }
