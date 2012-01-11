@@ -38,11 +38,8 @@ class JsonApi_Response_ErrorTest
 
   public function testUnknownFormat()
   {
-    $response = JsonApi_Response::factory(new JsonApi_Http_Response(
-      $this->_uri,
-      self::HTTP_STATUS_OK,
-      json_encode(array('foo' => 'bar'))
-    ));
+    $response =
+      $this->_genResponse(self::HTTP_STATUS_OK, array('foo' => 'bar'));
 
     $this->assertInstanceOf(
       'JsonApi_Response_Error',
@@ -64,11 +61,7 @@ class JsonApi_Response_ErrorTest
 
   public function testBadHttpStatus()
   {
-    $response = $this->_success(
-      array('foo' => 'bar'),
-      self::HTTP_STATUS_OK,
-      401
-    );
+    $response = $this->_success(array('foo' => 'bar'), 401);
 
     $this->assertInstanceOf(
       'JsonApi_Response_Error',

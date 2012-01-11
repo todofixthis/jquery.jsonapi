@@ -37,9 +37,16 @@ class JsonApi_Response_FailureTest
       'Expected well-formed failure response to have correct type.'
     );
 
+    /** @noinspection PhpUndefinedFieldInspection */
+    $errors = $response->errors;
+
+    $this->assertArrayHasKey($this->_key, $errors,
+      'Expected error message to have correct key in response detail.'
+    );
+
     $this->assertEquals(
       $this->_msg,
-      $response->errors[$this->_key],
+      $errors[$this->_key],
       'Expected error message to be stored in the response detail.'
     );
   }
