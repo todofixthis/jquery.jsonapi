@@ -77,8 +77,7 @@ class JsonApi_Http_Client_Zend extends JsonApi_Http_Client
       }
     }
 
-    /* Create the full URI including params this time. */
-    $Uri = $this->getUri($path, $params);
+    $Uri = $this->getUri($path, $params, $method);
 
     try
     {

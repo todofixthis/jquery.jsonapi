@@ -104,13 +104,13 @@ abstract class JsonApi_Http_Client
 
   /** Generate the URI to send the request to.
    *
-   * @param string $hostname
-   * @param string $path
-   * @param array  $params
+   * @param string    $path
+   * @param string[]  $params
+   * @param string    $meth
    *
    * @return Zend_Uri_Http
    */
-  public function getUri( $path, array $params = array() )
+  public function getUri( $path, array $params, $meth = 'get' )
   {
     if( ! $hostname = $this->getHostname() )
     {
@@ -119,10 +119,14 @@ abstract class JsonApi_Http_Client
       );
     }
 
+    /** @var $Uri Zend_Uri_Http */
     $Uri = Zend_Uri::factory('http://' . $hostname);
-
     $Uri->setPath($path);
-    $Uri->setQuery($params);
+
+    if( $meth == 'get' )
+    {
+      $Uri->setQuery($params);
+    }
 
     return $Uri;
   }
