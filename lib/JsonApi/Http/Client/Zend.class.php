@@ -60,10 +60,9 @@ class JsonApi_Http_Client_Zend extends JsonApi_Http_Client
    */
   public function fetch( $method, $path, array $params = array(), array $config = array() )
   {
-    $Client = new Zend_Http_Client(
-      $this->getUri($path),
-      array_merge($this->_config, $config)
-    );
+    $Uri = $this->getUri($path, $params, $method);
+
+    $Client = new Zend_Http_Client($Uri, array_merge($this->_config, $config));
 
     $method = strtoupper($method);
 
@@ -76,8 +75,6 @@ class JsonApi_Http_Client_Zend extends JsonApi_Http_Client
         $Client->$meth($key, $val);
       }
     }
-
-    $Uri = $this->getUri($path, $params, $method);
 
     try
     {
