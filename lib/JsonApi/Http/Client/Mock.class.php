@@ -50,7 +50,7 @@ class JsonApi_Http_Client_Mock extends JsonApi_Http_Client
    * @param string $method
    * @param int    $status
    *
-   * @return JsonApi_HttpClient_Mock $this
+   * @return $this
    */
   public function seed(
           $path,
@@ -107,16 +107,16 @@ class JsonApi_Http_Client_Mock extends JsonApi_Http_Client
    *
    * @param string $method
    *
-   * @return array(string(uri) => string)|null
+   * @return string[]
    */
   public function getAll( $method = self::METHOD_ANY )
   {
     return (isset($this->_content[$method]) ? $this->_content[$method] : null);
   }
 
-  /** Returns all requset URLs that were sent to this client.
+  /** Returns all request URLs that were sent to this client.
    *
-   * @return array(url) Note that there is no method information in the array;
+   * @return string[] Note that there is no method information in the array;
    *  it only contains URL strings.
    */
   public function getRequests(  )
