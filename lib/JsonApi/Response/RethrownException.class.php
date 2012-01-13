@@ -42,8 +42,6 @@ class JsonApi_Response_RethrownException extends JsonApi_Response_Exception
    *
    * @param JsonApi_Http_Response $response
    * @param JsonApi_Exception     $exception
-   *
-   * @return void
    */
   public function __construct( JsonApi_Http_Response $response, JsonApi_Exception $exception )
   {
