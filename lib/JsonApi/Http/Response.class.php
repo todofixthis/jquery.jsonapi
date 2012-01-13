@@ -48,8 +48,6 @@ class JsonApi_Http_Response
    * @param Zend_Uri_Http $Uri
    * @param int           $status  HTTP status code.
    * @param string        $content
-   *
-   * @return void
    */
   public function __construct( Zend_Uri_Http $Uri, $status, $content = '' )
   {
