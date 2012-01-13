@@ -71,6 +71,15 @@ class JsonApi_Response_RethrownException extends JsonApi_Response_Exception
     return $this->_response;
   }
 
+  /** Returns the decoded content from the response.
+   *
+   * @return stdClass
+   */
+  public function getDecodedResponse(  )
+  {
+    return $this->getResponseObject()->getContent();
+  }
+
   /** Returns the original exception object that was rethrown.
    *
    * @return JsonApi_Exception
