@@ -27,6 +27,9 @@
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage lib.jsonapi
+ *
+ * @method sfWebRequest getRequest()
+ * @method sfWebResponse getResponse()
  */
 class JsonApi_Actions extends sfActions
 {
