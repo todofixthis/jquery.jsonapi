@@ -203,7 +203,6 @@ abstract class JsonApi_Base
 
   /** Init the class instance.
    *
-   * @return void
    * @access protected Use getInstance() instead.
    */
   protected function __construct(  )

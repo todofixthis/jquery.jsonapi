@@ -80,7 +80,6 @@ class JsonApi_Http_Client_Mock extends JsonApi_Http_Client
    */
   public function fetch( $method, $path, array $params = array() )
   {
-
     $key = $this->_genContentKey($path, $params);
 
     if( isset($this->_content[$method][$key]) )
@@ -97,10 +96,13 @@ class JsonApi_Http_Client_Mock extends JsonApi_Http_Client
       $content = Zend_Http_Response::responseCodeAsText(self::STATUS_NOT_FOUND);
     }
 
-    $uri                =
-    $this->_requests[]  = $this->getUri($path, $params);
+    $this->_requests[] = $key;
 
-    return new JsonApi_Http_Response($uri, $status, $content);
+    return new JsonApi_Http_Response(
+      $this->getUri($path, $params, $method),
+      $status,
+      $content
+    );
   }
 
   /** Returns all seeded URLs and their content.
@@ -133,7 +135,7 @@ class JsonApi_Http_Client_Mock extends JsonApi_Http_Client
    */
   protected function _genContentKey( $path, array $params )
   {
-    return (string) $this->getUri(
+    return (string) $this->getUrl(
       $path,
       JsonApi_Utility::normalizeParams($params)
     );

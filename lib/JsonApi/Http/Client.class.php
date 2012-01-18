@@ -49,8 +49,6 @@ abstract class JsonApi_Http_Client
   /** Init the class instance.
    *
    * @param string $hostname
-   *
-   * @return void
    */
   public function __construct( $hostname = null )
   {
@@ -129,5 +127,25 @@ abstract class JsonApi_Http_Client
     }
 
     return $Uri;
+  }
+
+  /** Similar to getUri(), but always returns a string value, and is safer to
+   *    use with really, really giant $params arrays.
+   *
+   * @see Zend_Uri_Http->validateQuery()
+   * @see https://bugs.php.net/bug.php?id=45735
+   *
+   * @param string    $path
+   * @param string[]  $params
+   *
+   * @return string
+   */
+  public function getUrl( $path, array $params )
+  {
+    return sprintf(
+      '%s?%s',
+        rtrim($this->getUri($path, array())->getUri(), '?'),
+        http_build_query($params)
+    );
   }
 }
