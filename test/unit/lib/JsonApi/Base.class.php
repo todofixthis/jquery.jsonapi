@@ -31,6 +31,7 @@
 class JsonApi_BaseTest extends Test_Case_Unit
 {
   protected
+    $_plugin = 'sfJwtJsonApiPlugin',
     $_class,
     $_hostname;
 
@@ -50,15 +51,9 @@ class JsonApi_BaseTest extends Test_Case_Unit
 
     $uri = JsonApi_Base::getUriFor($this->_class, 'getTime', array($timezone));
 
-    $this->assertInstanceOf(
-      'Zend_Uri_Http',
-      $uri,
-      'Expected result to have the correct type.'
-    );
-
     $this->assertEquals(
       'http://localhost/time/get?timezone=' . urlencode($timezone),
-      $uri->getUri(),
+      $uri,
       'Expected correct URI reported.'
     );
   }
@@ -75,33 +70,6 @@ class JsonApi_BaseTest extends Test_Case_Unit
     catch( InvalidArgumentException $e )
     {
     }
-  }
-
-  public function testGetDebugUriFor()
-  {
-    $timezone = 'America/DFW';
-
-    $uri = JsonApi_Base::getDebugUriFor(
-      $this->_class,
-      'getTime',
-      array($timezone),
-      'service'
-    );
-
-    $this->assertInstanceOf(
-      'Zend_Uri_Http',
-      $uri,
-      'Expected result to have the correct type.'
-    );
-
-    $this->assertEquals(
-      sprintf(
-        'http://localhost/service_dev.php/time/get?timezone=%s',
-          urlencode($timezone)
-      ),
-      $uri->getUri(),
-      'Expected correct URI reported.'
-    );
   }
 }
 

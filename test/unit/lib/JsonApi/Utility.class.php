@@ -30,6 +30,9 @@
  */
 class JsonApi_UtilityTest extends Test_Case_Unit
 {
+  protected
+    $_plugin = 'sfJwtJsonApiPlugin';
+
   public function testIsIterable()
   {
     $this->assertTrue(JsonApi_Utility::isIterable(array()),

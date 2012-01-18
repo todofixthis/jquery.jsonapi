@@ -9,8 +9,11 @@
 class JsonApi_Http_Client_MockTest extends Test_Case_Unit
 {
   protected
-    /** @var JsonApi_Http_Client_Mock */
-    $_client,
+    $_plugin = 'sfJwtJsonApiPlugin';
+
+  /** @var JsonApi_Http_Client_Mock */
+  protected $_client;
+  protected
     $_hostname,
 
     $_path,
@@ -61,8 +64,8 @@ class JsonApi_Http_Client_MockTest extends Test_Case_Unit
     );
 
     $this->assertEquals(
-      $response,
-      $this->_doRequest('post'),
+      $response->getContent(),
+      $this->_doRequest('post')->getContent(),
       'Expected content to be seeded for any method by default.'
     );
   }
@@ -187,8 +190,8 @@ class JsonApi_Http_Client_MockTest extends Test_Case_Unit
 
   /** Execute a request and return the response.
    *
-   * @param string  $method ('get', 'post')
-   * @param array   $params Customize parameters.
+   * @param string      $meth
+   * @param array|bool  $params Customize parameters.
    *
    * If you need to customize the path as well, you might as well interface with
    *  $this->_client directly
@@ -205,11 +208,11 @@ class JsonApi_Http_Client_MockTest extends Test_Case_Unit
 
   /** Seeds the client with content.
    *
-   * @param string $content
-   * @param string $method
-   * @param int    $status
+   * @param bool|string $content
+   * @param string      $method
+   * @param int         $status
    *
-   * @return JsonApi_Http_Client_MockTest $this
+   * @return $this
    */
   protected function _doSeed(
     $content  = false,

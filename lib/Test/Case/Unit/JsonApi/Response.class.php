@@ -13,6 +13,9 @@ abstract class Test_Case_Unit_JsonApi_Response extends Test_Case_Unit
     STATUS_OK         = JsonApi_Response::STATUS_OK,
     STATUS_FAIL       = JsonApi_Response::STATUS_FAIL;
 
+  protected
+    $_plugin = 'sfJwtJsonApiPlugin';
+
   /** @var Zend_Uri_Http */
   protected $_uri;
 

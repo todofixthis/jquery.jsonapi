@@ -119,7 +119,7 @@ abstract class JsonApi_Base
    * @param string  $method
    * @param array   $args
    *
-   * @return Zend_Uri_Http
+   * @return string
    */
   static public function getUriFor( $classname, $method, array $args = array() )
   {
@@ -138,7 +138,7 @@ abstract class JsonApi_Base
       call_user_func_array(array($classname, $method), $args);
 
       $urls = $mock->getRequests();
-      $url = reset($urls);
+      $uri = reset($urls);
     }
     catch( Exception $e )
     {
@@ -151,34 +151,6 @@ abstract class JsonApi_Base
     $instance->setHttpClient($client);
 
     /* And we're done. */
-    return $url;
-  }
-
-  /** Similar to {@see getUrlFor()}, except the resulting URL is automatically
-   *    frontend_dev.php'd.
-   *
-   * @param string  $classname
-   * @param string  $method
-   * @param array   $args
-   * @param string  $application  Name of the application to inject.
-   *
-   * @return Zend_Uri_Http
-   */
-  static public function getDebugUriFor(
-          $classname,
-          $method,
-    array $args         = array(),
-          $application  = 'frontend'
-  )
-  {
-    $uri = self::getUriFor($classname, $method, $args);
-
-    $uri->setPath(sprintf(
-      '/%s_dev.php/%s',
-        $application,
-        ltrim($uri->getPath(), '/')
-    ));
-
     return $uri;
   }
 
