@@ -95,9 +95,7 @@ abstract class JsonApi_Response
    *
    * @param JsonApi_Http_Response $response
    *
-   * @return void
    * @access protected use factory() to create a new instance.
-   *
    * @final Override _initialize() in subclasses to customize initialization.
    */
   final protected function __construct( JsonApi_Http_Response $response )
@@ -159,7 +157,7 @@ abstract class JsonApi_Response
 
   /** Shortcut for calling getUri() on $_response.
    *
-   * @return Zend_Uri_Http
+   * @return Zend_Uri
    */
   public function getUri(  )
   {

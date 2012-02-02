@@ -30,7 +30,7 @@
  */
 class JsonApi_Http_Response
 {
-  /**#@+ Corresponds to matching constant in JsonApi_Base. */
+  /**#@+ Corresponds to matching constant in {@see JsonApi_Response}. */
   const
     STATUS_OK   = 200,
     STATUS_FAIL = 400,
@@ -39,17 +39,18 @@ class JsonApi_Http_Response
 
   protected
     $_status,
-    $_content,
-    /** @var Zend_Uri_Http */
-    $_uri;
+    $_content;
+
+  /** @var Zend_Uri */
+  protected $_uri;
 
   /** Init the class instance.
    *
-   * @param Zend_Uri_Http $Uri
-   * @param int           $status  HTTP status code.
-   * @param string        $content
+   * @param Zend_Uri  $Uri
+   * @param int       $status  HTTP status code.
+   * @param string    $content
    */
-  public function __construct( Zend_Uri_Http $Uri, $status, $content = '' )
+  public function __construct( Zend_Uri $Uri, $status, $content = '' )
   {
     $this->_uri     = $Uri;
     $this->_status  = (int) $status;
@@ -58,7 +59,7 @@ class JsonApi_Http_Response
 
   /** Accessor for $_uri.
    *
-   * @return Zend_Uri_Http
+   * @return Zend_Uri
    */
   public function getUri(  )
   {

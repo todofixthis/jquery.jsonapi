@@ -45,7 +45,7 @@ class Test_Browser_Plugin_JsonApiResponse extends Test_Browser_Plugin
 
   /** Returns a reference to the response content.
    *
-   * @return Test_Browser_Plugin_JsonApiResponse($this)
+   * @return $this
    */
   public function invoke(  )
   {
@@ -66,7 +66,7 @@ class Test_Browser_Plugin_JsonApiResponse extends Test_Browser_Plugin
   /** Returns the class name of the response object (e.g.,
    *    JsonApi_Response_Success).
    *
-   * @return string(classname)
+   * @return string
    */
   public function getType(  )
   {
@@ -79,7 +79,7 @@ class Test_Browser_Plugin_JsonApiResponse extends Test_Browser_Plugin
    *
    * This only means something when the response is a failure response.
    *
-   * @return array
+   * @return string[]
    */
   public function getErrorKeys(  )
   {
