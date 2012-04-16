@@ -242,7 +242,7 @@
         try {
           if( typeof($res.status) != 'undefined' && $res.status == 'ok' ) {
             if( typeof($options.success) == 'function' ) {
-              $options.success($res, $data);
+              $options.success($res.detail, $data);
             }
 
             if( typeof($options.post_execute) == 'function' ) {
