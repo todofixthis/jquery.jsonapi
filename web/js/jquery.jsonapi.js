@@ -240,7 +240,7 @@
 
       success:  function( $res, $status, $xhr ) {
         try {
-          if( typeof($res.status) != 'undefined' && $res.status == 'OK' ) {
+          if( typeof($res.status) != 'undefined' && $res.status == 'ok' ) {
             if( typeof($options.success) == 'function' ) {
               $options.success($res, $data);
             }
@@ -267,7 +267,7 @@
             throw new Error('No response from server.');
           }
 
-          if( typeof($res.status) != 'undefined' && $res.status == 'ERROR' ) {
+          if( typeof($res.status) != 'undefined' && $res.status == 'error' ) {
             if( typeof($options.error) == 'function' ) {
               $options.error($res, $data);
             }
