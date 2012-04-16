@@ -39,7 +39,7 @@
  *                              - jQuery $element Element that triggered the
  *                                 jsonapi call.
  *
- *  - success:                Runs when Ajax response has status of 'OK'.
+ *  - success:                Runs when Ajax response has status of 'ok'.
  *                             Return value is ignored.
  *
  *                             Parameters:
@@ -48,7 +48,7 @@
  *                                 jsonapi call.
  *                              - Object $data    Data that were sent to remote.
  *
- *  - error:                  Runs when Ajax response has status of 'ERROR'.
+ *  - failure:                Runs when Ajax response has status of 'fail'.
  *                             Return value is ignored.
  *
  *                             Parameters:
@@ -57,7 +57,7 @@
  *                                 jsonapi call.
  *                              - Object $data    Data that were sent to remote.
  *
- *  - exception:              Runs when Ajax response is not decipherable or has
+ *  - error:                  Runs when Ajax response is not decipherable or has
  *                             an invalid status value.  Return value is
  *                             ignored.
  *
@@ -90,8 +90,8 @@
  *                                 invoked post_execute():
  *                                  - "pre_execute"
  *                                  - "success"
+ *                                  - "failure"
  *                                  - "error"
- *                                  - "exception"
  *
  *  Advanced Options:
  *  - async:                  If true (default), the Ajax request will be
@@ -169,8 +169,8 @@
         /* Hooks */
         'pre_execute':            null,
         'success':                null,
+        'failure':                null,
         'error':                  null,
-        'exception':              null,
         'post_execute':           null,
 
         /* Advanced Options */
@@ -215,18 +215,18 @@
      * @return void
      */
     function _handleException( $err, $xhr ) {
-      if( typeof($options.exception) == 'function' ) {
+      if( typeof($options.error) == 'function' ) {
         if( typeof($err.constructor) == 'undefined' || $err.constructor != Error ) {
           //noinspection AssignmentToFunctionParameterJS
           $err = new Error($err);
         }
 
         /* $err is kind of like $res, so it goes before $data. */
-        $options.exception($err, $data, $xhr);
+        $options.error($err, $data, $xhr);
       }
 
       if( typeof($options.post_execute) == 'function' ) {
-        $options.post_execute($data, 'exception');
+        $options.post_execute($data, 'error');
       }
     }
 
@@ -259,21 +259,20 @@
 
       error:    function( $xhr, $status ) {
         try {
-          //noinspection JSUnresolvedFunction
-          var $res = $.httpData($xhr, 'json');
+          var $res = $.parseJSON($xhr.responseText);
 
           if( ! $res ) {
             //noinspection ExceptionCaughtLocallyJS
             throw new Error('No response from server.');
           }
 
-          if( typeof($res.status) != 'undefined' && $res.status == 'error' ) {
-            if( typeof($options.error) == 'function' ) {
-              $options.error($res, $data);
+          if( typeof($res.status) != 'undefined' && $res.status == 'fail' ) {
+            if( typeof($options.failure) == 'function' ) {
+              $options.failure($res.detail, $data);
             }
 
             if( typeof($options.post_execute) == 'function' ) {
-              $options.post_execute($data, 'error');
+              $options.post_execute($data, 'failure');
             }
           } else {
             //noinspection ExceptionCaughtLocallyJS
@@ -300,8 +299,8 @@
         /* Hooks */
         'pre_execute':            null,
         'success':                null,
+        'failure':                null,
         'error':                  null,
-        'exception':              null,
         'post_execute':           null,
 
         /* Advanced Options */
@@ -398,15 +397,15 @@
               }
             },
 
-            'error': function( $res, $data ) {
-              if( typeof($options.error) == 'function' ) {
-                return $options.error($res, $this, $data);
+            'failure': function( $res, $data ) {
+              if( typeof($options.failure) == 'function' ) {
+                return $options.failure($res, $this, $data);
               }
             },
 
-            'exception': function( $err, $data, $xhr ) {
-              if( typeof($options.exception) == 'function' ) {
-                return $options.exception($err, $this, $data, $xhr);
+            'error': function( $err, $data, $xhr ) {
+              if( typeof($options.error) == 'function' ) {
+                return $options.error($err, $this, $data, $xhr);
               }
             },
 
