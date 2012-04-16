@@ -160,6 +160,7 @@
    * Also leveraged by $.fn.jsonapi() below.
    */
   $.extend({'jsonapi': function( $options ) {
+    //noinspection AssignmentToFunctionParameterJS
     $options = $.extend(
       {
         /* Standard Options */
@@ -181,6 +182,7 @@
     );
 
     /* The only value in $options that *must* have a value is url. */
+    //noinspection EqualityComparisonWithCoercionJS
     if( $options.url == '' ) {
       throw new Error('url option not set.');
     }
@@ -215,6 +217,7 @@
     function _handleException( $err, $xhr ) {
       if( typeof($options.exception) == 'function' ) {
         if( typeof($err.constructor) == 'undefined' || $err.constructor != Error ) {
+          //noinspection AssignmentToFunctionParameterJS
           $err = new Error($err);
         }
 
@@ -227,6 +230,7 @@
       }
     }
 
+    //noinspection JSUnusedLocalSymbols
     $.ajax({
       async:    $options.async,
       type:     $options.method,
@@ -245,6 +249,7 @@
               $options.post_execute($data, 'success');
             }
           } else {
+            //noinspection ExceptionCaughtLocallyJS
             throw new Error('Malformed success response from server.');
           }
         } catch( $err ) {
@@ -254,9 +259,11 @@
 
       error:    function( $xhr, $status ) {
         try {
+          //noinspection JSUnresolvedFunction
           var $res = $.httpData($xhr, 'json');
 
           if( ! $res ) {
+            //noinspection ExceptionCaughtLocallyJS
             throw new Error('No response from server.');
           }
 
@@ -269,6 +276,7 @@
               $options.post_execute($data, 'error');
             }
           } else {
+            //noinspection ExceptionCaughtLocallyJS
             throw new Error('Malformed error response from server.');
           }
         } catch( $err ) {
@@ -283,6 +291,7 @@
    * See document docblock for more information.
    */
   $.extend($.fn, {'jsonapi': function( $options ) {
+    //noinspection AssignmentToFunctionParameterJS
     $options = $.extend(
       {
         /* Standard Options */
@@ -313,6 +322,7 @@
 
       var $trigger;
       if( $options.trigger ) {
+        //noinspection JSUnusedAssignment
         $trigger = $options.trigger;
       } else {
         switch( $tagName )
