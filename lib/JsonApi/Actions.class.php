@@ -205,10 +205,12 @@ class JsonApi_Actions extends sfActions
 
       $this->result = $response;
 
+      $this->getResponse()->setContentType('text/html');
       return self::DEBUG;
     }
     else
     {
+      $this->getResponse()->setContentType('application/json');
       return $this->renderText(json_encode($response));
     }
   }
