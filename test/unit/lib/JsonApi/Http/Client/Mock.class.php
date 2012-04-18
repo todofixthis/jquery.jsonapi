@@ -188,6 +188,50 @@ class JsonApi_Http_Client_MockTest extends Test_Case_Unit
     );
   }
 
+  public function testSeedSuccess(  )
+  {
+    $likes  = 42;
+
+    $this->_client->seedSuccess(
+      $this->_path,
+      $this->_params,
+      array('likes' => $likes)
+    );
+
+    $response = $this->_doRequest()->makeJsonApiResponse();
+
+    $this->assertTrue($response->isSuccess(),
+      'Expected success repsonse to be seeded automatically.'
+    );
+
+    /** @noinspection PhpUndefinedFieldInspection */
+    $this->assertEquals($likes, $response->likes,
+      'Expected response detail to be seeded correctly.'
+    );
+  }
+
+  public function testSeedFailure(  )
+  {
+    $errors = array('producer' => 'I gotta have more cowbell baby!');
+
+    $this->_client->seedFailure(
+      $this->_path,
+      $this->_params,
+      $errors
+    );
+
+    $response = $this->_doRequest()->makeJsonApiResponse();
+
+    $this->assertFalse($response->isSuccess(),
+      'Expected failure repsonse to be seeded automatically.'
+    );
+
+    /** @noinspection PhpUndefinedFieldInspection */
+    $this->assertEquals($errors, $response->errors,
+      'Expected response detail to be seeded correctly.'
+    );
+  }
+
   /** Execute a request and return the response.
    *
    * @param string      $meth

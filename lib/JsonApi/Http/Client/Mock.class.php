@@ -50,7 +50,7 @@ class JsonApi_Http_Client_Mock extends JsonApi_Http_Client
    * @param string $method
    * @param int    $status
    *
-   * @return $this
+   * @return static
    */
   public function seed(
           $path,
@@ -68,6 +68,64 @@ class JsonApi_Http_Client_Mock extends JsonApi_Http_Client
     );
 
     return $this;
+  }
+
+  /** Seeds the client with a simulated success response.
+   *
+   * @param string  $path
+   * @param array   $params
+   * @param array   $detail
+   * @param string  $method
+   *
+   * @return static
+   */
+  public function seedSuccess(
+          $path,
+    array $params,
+    array $detail,
+          $method = self::METHOD_ANY
+  )
+  {
+    return $this->seed(
+      $path,
+      $params,
+      array(
+        JsonApi_Response::KEY_STATUS  => JsonApi_Response::STATUS_OK,
+        JsonApi_Response::KEY_DETAIL  => $detail
+      ),
+      $method,
+      JsonApi_Http_Response::STATUS_OK
+    );
+  }
+
+  /** Seeds the client with a simulated failure response.
+   *
+   * @param string  $path
+   * @param array   $params
+   * @param array   $errors
+   * @param string  $method
+   *
+   * @return static
+   */
+  public function seedFailure(
+          $path,
+    array $params,
+    array $errors,
+          $method = self::METHOD_ANY
+  )
+  {
+    return $this->seed(
+      $path,
+      $params,
+      array(
+        JsonApi_Response::KEY_STATUS  => JsonApi_Response::STATUS_FAIL,
+        JsonApi_Response::KEY_DETAIL  => array(
+          JsonApi_Response_Failure::KEY_ERRORS  => $errors
+        )
+      ),
+      $method,
+      JsonApi_Http_Response::STATUS_FAIL
+    );
   }
 
   /** Send a request to the server.
