@@ -282,8 +282,8 @@ Invoking an API call is as simple as calling `self::_doApiCall()` in your custom
   correct HTTP adapter for your class (often used for unit tests; see
   **Testing** below).
 
-  Because JsonApi is designed to be compatible with PHP 5.2, you must specify
-   `__CLASS__` as the value for this parameter.
+    Because JsonApi is designed to be compatible with PHP 5.2, you must specify
+      `__CLASS__` as the value for this parameter.
 
 2. The path to use for the request.  This value is not interpreted by Symfony's
   controller, so you cannot use e.g., route names here.
