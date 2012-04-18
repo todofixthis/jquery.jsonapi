@@ -502,7 +502,7 @@ In the `_setUp()` method, we inject the mock HTTP client into MyApiMethodApi:
     JsonApi_Base::getInstance('MyApiMethodApi')
       ->setHttpClient($this->_adapter);
 
-Instead of sending an HTTP request `JsonApi_Http_Client_Mock` will compare any
+Instead of sending an HTTP request `JsonApi_Http_Client_Mock` will compare the
   request parameters against an array of seeded values and return any matching
   response it was seeded with.
 
