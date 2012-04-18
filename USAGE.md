@@ -71,7 +71,7 @@ JsonApi also provides a number of methods to make it easier to validate incoming
 Here is an example of a JsonApi module with an action to increment the number of
   likes for an object:
 
-    # %sf_apps_dir%/myapp/modules/myapimodule/actions/actions.class.php
+    # %sf_apps_dir%/frontend/modules/myapimodule/actions/actions.class.php
 
     <?php
     /** Powers the myapimodule module.
