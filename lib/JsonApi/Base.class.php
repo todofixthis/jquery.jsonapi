@@ -166,7 +166,12 @@ abstract class JsonApi_Base
    * @todo Remove no-late-static-binding cruft if/when we port this plugin to
    *  PHP 5.3.
    */
-  static protected function _doApiCall( $class, $path, array $args, $meth )
+  static protected function _doApiCall(
+          $class,
+          $path,
+    array $args,
+          $meth   = 'post'
+  )
   {
     return self::getInstance($class)->getHttpClient()
       ->$meth($path, $args)
