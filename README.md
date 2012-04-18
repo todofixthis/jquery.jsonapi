@@ -1,5 +1,5 @@
 # About
-sfJwtJsonApiPlugin ("JsonAPI") was developed at [JWT](http://jwt.com) to make it
+sfJwtJsonApiPlugin ("JsonApi") was developed at [JWT](http://jwt.com) to make it
   easier to create Ajax APIs for Symfony 1.4 projects.
 
 This plugin provides both server- and client-side libraries that do all the
@@ -27,5 +27,5 @@ See USAGE.md
 # Contributing
 We welcome any and all suggestions, requests, (constructive) criticism, code,
   fixes, forks, success stories... in short, if you think it would improve the
-  quality of JsonAPI (or at least make us feel good about it), we'd love to see
+  quality of JsonApi (or at least make us feel good about it), we'd love to see
   it.
