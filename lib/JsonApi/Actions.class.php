@@ -119,6 +119,18 @@ class JsonApi_Actions extends sfActions
     }
   }
 
+  /** Sets failure messages, removing any existing ones.
+   *
+   * @param string[] $failures
+   *
+   * @return void
+   */
+  protected function setFailures( array $failures )
+  {
+    $this->failures = array();
+    $this->addFailures($failures);
+  }
+
   /** Sends success response.
    *
    * @param array $messages Additional messages to be included in the response
