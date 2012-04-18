@@ -351,22 +351,33 @@ Here is an example of how to use the `jsonapi` jQuery plugin to implement a
     <script type="text/javascript">
     $(function(  ) {
       $('#like').jsonapi({
+        /* Specify URL to requst. */
         'url':  '/myapimodule/like',
+
+        /* Specify POST data sent with the request. */
         'data': function( button ) {
           return {
             'object-id': button.attr('data-object-id')
           };
         },
+
+        /* Event handler triggered before ajax request fires. */
         'pre_execute': function(  ) {
           $('ajax-loader').show();
           $('#like-errors').clear();
         },
+
+        /* Event handler triggered after response is processed. */
         'post_execute': function(  ) {
           $('ajax-loader').hide();
         },
+
+        /* Event handler triggered when receiving a success response. */
         'success': function( response, button ) {
           button.text(response.likes + ' likes!');
         },
+
+        /* Event handler triggered when receiving a failure response. */
         'failure': function( response, button ) {
           var ul = $(document.createElement('ul'));
           $.each(response.errors, function(key, error) {
@@ -377,6 +388,8 @@ Here is an example of how to use the `jsonapi` jQuery plugin to implement a
           });
           $('#like-errors').append(ul);
         },
+
+        /* Event handler triggered when something goes wrong. */
         'error': function( error ) {
           $('#like-errors').text(error.message);
         }
