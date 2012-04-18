@@ -1,12 +1,12 @@
 # About This Guide
-This guide documents the major functionality that JsonAPI provides.  It can be
+This guide documents the major functionality that JsonApi provides.  It can be
   considered a user reference guide with cookbook elements.
 
 This guide does not contain API documentation, nor does it cover topics that
-  might be of interest to developers who wish to make changes to JsonAPI itself.
+  might be of interest to developers who wish to make changes to JsonApi itself.
 
 # Basic Concepts
-The JsonAPI works by accepting a standard HTTP request and responding with a
+The JsonApi works by accepting a standard HTTP request and responding with a
   specially-formatted JSON response.
 
 The response is a JSON object that always contains two elements:  `status` and
@@ -58,17 +58,17 @@ This is an example of a response from a call to the same API to increment the
 
 
 # Writing API Actions
-Writing actions for JsonAPI is very similar to writing any other Symfony action,
+Writing actions for JsonApi is very similar to writing any other Symfony action,
   with two minor differences:
 
   - The actions class should `extend JsonApi_Actions` instead of `sfActions`.
   - Every execution path should terminate with `return $this->success();` or
     `return $this->failure();`.
 
-JsonAPI also provides a number of methods to make it easier to validate incoming
+JsonApi also provides a number of methods to make it easier to validate incoming
   parameters.
 
-Here is an example of a JsonAPI module with an action to increment the number of
+Here is an example of a JsonApi module with an action to increment the number of
   likes for an object:
 
     # %sf_apps_dir%/myapp/modules/myapimodule/actions/actions.class.php
@@ -137,13 +137,13 @@ For extra security, it is a good idea to require that all API requests are HTTP
 Although you can enforce this via Symfony's routing system, it is recommended
   that you not do this and instead use `$this->requirePost();`.
 
-JsonAPI includes a useful mechanism for debugging API calls that allows you to
+JsonApi includes a useful mechanism for debugging API calls that allows you to
   see a human-readable response in your browser which requires that an HTTP GET
   request is accepted under certain conditions (see **Debugging** below).
 
 ## Validating Parameters
 After validating the request method, the next step for most API actions is to
-  validate the request parameters.  JsonAPI provides a method to make this
+  validate the request parameters.  JsonApi provides a method to make this
   very straightforward:  `$this->getParam()`.
 
 `$this->getParam()` takes two arguments:  the name of the parameter and an array
@@ -226,7 +226,7 @@ Note that you can pass an array to `$this->failure()`, which is a shortcut for
 
 ## Success
 Once your action has finished processing, it is important to
-  `return $this->success()` so that JsonAPI can format the response correctly.
+  `return $this->success()` so that JsonApi can format the response correctly.
 
 You can optionally pass an array of values to `$this->success()` to include them
   in the `detail` element of the response.
@@ -236,12 +236,12 @@ For example, the `like` action includes the updated like count in its response:
     return $this->success(array('likes' => $object->getLikeCount()));
 
 # Invoking API Actions
-JsonAPI provides two libraries for invoking API actions:  a PHP stub for writing
+JsonApi provides two libraries for invoking API actions:  a PHP stub for writing
   server-to-server communication libraries and a Javascript client for sending
-  JsonAPI requests from a browser.
+  JsonApi requests from a browser.
 
 ## PHP
-JsonAPI provides a base class `JsonApi_Base` that you can use to create your API
+JsonApi provides a base class `JsonApi_Base` that you can use to create your API
   class.
 
 Here is an example of a class used to communicate with the `like` controller
@@ -282,7 +282,7 @@ Invoking an API call is as simple as calling `self::_doApiCall()` in your custom
   correct HTTP adapter for your class (often used for unit tests; see
   **Testing** below).
 
- Because JsonAPI is designed to be compatible with PHP 5.2, you must specify
+ Because JsonApi is designed to be compatible with PHP 5.2, you must specify
   `__CLASS__` as the value for this parameter.
 
 2. The path to use for the request.  This value is not interpreted by Symfony's
