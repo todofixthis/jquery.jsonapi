@@ -418,8 +418,8 @@ The `jsonapi` plugin has one required option `url` which specifies the URL for
   response is a `500 Internal Server Error` or is otherwise invalid.  In the
   example, it displays the error message in the div above the button.
 
-There are many more options available.  The `jsonapi` jQuery plugin is well-
-  documented; it is recommended that you review the plugin's
+There are many more options available.  The `jsonapi` jQuery plugin is
+  well-documented; it is recommended that you review the plugin's
   `web/js/jquery.jsonapi.js` file for more information.
 
 # Debugging
