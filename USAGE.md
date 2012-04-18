@@ -299,14 +299,31 @@ Invoking an API call is as simple as calling `self::_doApiCall()` in your custom
 Here is an example of how to process the result of a request to the `like`
   action:
 
-    $response = MyApiModuleApi::like($objectId);
+    # %sf_lib_dir%/user/MyApiUser.class.php
 
-    if( ! $response->isSuccess() )
+    <?php
+    /** Invokes user-specific API methods.
+     */
+    class MyApiUser
     {
-      $response->throwException();
-    }
+      /** Adds a like to an object.
+       *
+       * @param int $objectId
+       *
+       * @return int New like count for the object.
+       */
+      public function likeObject( $objectId )
+      {
+        $response = MyApiModuleApi::like($objectId);
 
-    $newlikes = $response->likes;
+        if( ! $response->isSuccess() )
+        {
+          $response->throwException();
+        }
+
+        return $response->likes;
+      }
+    }
 
 Use the `isSuccess()` method to check to see if the response indicates a
   successful request (i.e., the `status` element is set to `'ok'`).
@@ -318,7 +335,7 @@ If the request failed, it is often easiest to call the response's
 If the request was successful, you can pull any values out of the `detail`
   element in the response using the response's `__get()` magic method:
 
-    $newlikes = $response->likes;
+    return $response->likes;
 
 ## Javascript
 JsonApi also comes packaged with a jQuery plugin that is designed to make it
