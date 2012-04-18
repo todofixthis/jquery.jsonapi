@@ -28,6 +28,9 @@
  * @package sfJwtJsonApiPlugin
  * @subpackage lib.jsonapi
  *
+ * @property string[] $failures
+ * @property array $result
+ *
  * @method sfWebRequest getRequest()
  * @method sfWebResponse getResponse()
  */
@@ -64,52 +67,55 @@ class JsonApi_Actions extends sfActions
     );
   }
 
-  /** Returns whether there are error messages.
+  /** Returns whether there are failure messages.
    *
    * @return bool
    */
-  protected function hasErrors(  )
+  protected function hasFailures(  )
   {
-    return ! empty($this->errors);
+    return ! empty($this->failures);
   }
 
-  /** Accessor for error messages.
+  /** Returns all failure messages.
    *
    * @return array
    */
-  protected function getErrors(  )
+  protected function getFailures(  )
   {
-    return $this->hasErrors() ? (array) $this->errors : array();
+    return $this->hasFailures() ? (array) $this->failures : array();
   }
 
-  /** Sets an error message.
+  /** Sets a failure message.
    *
    * @param string $key
    * @param string $message
    *
    * @return void
    */
-  protected function setError( $key, $message )
+  protected function setFailure( $key, $message )
   {
-    if( ! isset($this->errors) )
+    if( ! isset($this->failures) )
     {
-      $this->errors = array();
+      $this->failures = array();
     }
 
-    $this->errors[$key] = $message;
+    $this->failures[$key] = $message;
   }
 
-  /** Sets multiple error messages.
+  /** Sets multiple failure messages, without removing any existing ones.
    *
-   * @param array $errors
+   * This method will overwrite any failure messages that have the same key,
+   *  however.
+   *
+   * @param array $failures
    *
    * @return void
    */
-  protected function setErrors( array $errors )
+  protected function addFailures( array $failures )
   {
-    foreach( $errors as $key => $message )
+    foreach( $failures as $key => $message )
     {
-      $this->setError($key, $message);
+      $this->setFailure($key, $message);
     }
   }
 
@@ -134,18 +140,18 @@ class JsonApi_Actions extends sfActions
     return $this->_renderJson($response);
   }
 
-  /** Sends error response.
+  /** Sends failure response.
    *
-   * @param array $errors Additional error messages to be included in the
-   *  response detail (convenience for calling {@see setErrors()}.
+   * @param array $failures Additional failure messages to be included in the
+   *  response detail (convenience for calling {@see addFailures()}).
    *
    * @return string
    */
-  protected function error( array $errors = array() )
+  protected function failure( array $failures = array() )
   {
-    if( $errors )
+    if( $failures )
     {
-      $this->setErrors($errors);
+      $this->addFailures($failures);
     }
 
     $this->getResponse()->setStatusCode(400);
@@ -153,7 +159,7 @@ class JsonApi_Actions extends sfActions
     return $this->_renderJson(array(
       JsonApi_Response::KEY_STATUS  => JsonApi_Response::STATUS_FAIL,
       JsonApi_Response::KEY_DETAIL  => array(
-        JsonApi_Response_Failure::KEY_ERRORS => $this->getErrors()
+        JsonApi_Response_Failure::KEY_ERRORS => $this->getFailures()
       )
     ));
   }
@@ -177,7 +183,7 @@ class JsonApi_Actions extends sfActions
       }
       catch( sfValidatorError $e )
       {
-        $this->setError($key, $e->getMessage());
+        $this->setFailure($key, $e->getMessage());
         return null;
       }
     }
