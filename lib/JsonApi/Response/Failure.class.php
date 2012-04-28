@@ -28,6 +28,8 @@
  *
  * @package sfJwtJsonApiPlugin
  * @subpackage lib.jsonapi.response
+ *
+ * @property array $errors
  */
 class JsonApi_Response_Failure extends JsonApi_Response
 {
@@ -36,6 +38,7 @@ class JsonApi_Response_Failure extends JsonApi_Response
 
   /** Init the response object.
    *
+   * @throws JsonApi_Response_Exception If response JSON is malformed.
    * @return void
    */
   protected function _initialize(  )
