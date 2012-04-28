@@ -67,6 +67,61 @@ class JsonApi_Actions extends sfActions
     );
   }
 
+  /** Attempts to bind a form object to the request.
+   *
+   * Note:  If the request does not contain values for the form, the form will
+   *  remain unbound.
+   *
+   * @param sfForm  $form
+   * @param bool    $validate If true, validate the form and add failure
+   *  messages for any validation failures.  This will also generate a failure
+   *  message if the form could not be bound.
+   *
+   * @throws LogicException If the form class does not have a parameter name.
+   * @return sfForm $form
+   */
+  protected function bindForm( sfForm $form, $validate = true )
+  {
+    $request = $this->getRequest();
+
+    if( ! $name = $form->getName() )
+    {
+      throw new LogicException(sprintf(
+        'Please add "$this->widgetSchema->setNameFormat(...);" to %s->configure().'
+          , get_class($form)
+      ));
+    }
+
+    if( $request->hasParameter($name) )
+    {
+      $form->bind(
+          $request->getParameter($name)
+        , $request->getFiles($name)
+      );
+    }
+
+    if( $validate )
+    {
+      if( $form->isBound() )
+      {
+        if( ! $form->isValid() )
+        {
+          /** @var $error sfValidatorError */
+          foreach( $form->getErrorSchema()->getErrors() as $key => $error )
+          {
+            $this->setFailure($key, $error->getMessage());
+          }
+        }
+      }
+      else
+      {
+        $this->setFailure($name, 'Required.');
+      }
+    }
+
+    return $form;
+  }
+
   /** Returns whether there are failure messages.
    *
    * @return bool
