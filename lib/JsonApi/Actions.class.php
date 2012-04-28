@@ -106,11 +106,7 @@ class JsonApi_Actions extends sfActions
       {
         if( ! $form->isValid() )
         {
-          /** @var $error sfValidatorError */
-          foreach( $form->getErrorSchema()->getErrors() as $key => $error )
-          {
-            $this->setFailure($key, $error->getMessage());
-          }
+          $this->addFailures($form->getErrorSchema());
         }
       }
       else
@@ -145,7 +141,7 @@ class JsonApi_Actions extends sfActions
    * @param string $key
    * @param string $message
    *
-   * @return void
+   * @return static
    */
   protected function setFailure( $key, $message )
   {
@@ -155,6 +151,8 @@ class JsonApi_Actions extends sfActions
     }
 
     $this->failures[$key] = $message;
+
+    return $this;
   }
 
   /** Sets multiple failure messages, without removing any existing ones.
@@ -162,28 +160,44 @@ class JsonApi_Actions extends sfActions
    * This method will overwrite any failure messages that have the same key,
    *  however.
    *
-   * @param array $failures
+   * @param string[]|sfValidatorErrorSchema $failures
    *
-   * @return void
+   * @return static
    */
-  protected function addFailures( array $failures )
+  protected function addFailures( $failures )
   {
-    foreach( $failures as $key => $message )
+    if( $failures instanceof sfValidatorErrorSchema )
     {
-      $this->setFailure($key, $message);
+      $this->addFailures($failures->getErrors());
     }
+    else
+    {
+      foreach( (array) $failures as $key => $message )
+      {
+        if( $message instanceof sfValidatorErrorSchema )
+        {
+          $this->addFailures($message);
+        }
+        else
+        {
+          $this->setFailure($key, (string) $message);
+        }
+      }
+    }
+
+    return $this;
   }
 
   /** Sets failure messages, removing any existing ones.
    *
    * @param string[] $failures
    *
-   * @return void
+   * @return static
    */
   protected function setFailures( array $failures )
   {
     $this->failures = array();
-    $this->addFailures($failures);
+    return $this->addFailures($failures);
   }
 
   /** Sends success response.
