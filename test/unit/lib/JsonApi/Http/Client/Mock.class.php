@@ -256,7 +256,7 @@ class JsonApi_Http_Client_MockTest extends Test_Case_Unit
    * @param string      $method
    * @param int         $status
    *
-   * @return $this
+   * @return static
    */
   protected function _doSeed(
     $content  = false,
