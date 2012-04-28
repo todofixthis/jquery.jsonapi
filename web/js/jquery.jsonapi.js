@@ -38,6 +38,8 @@
  *                             Paremeters:
  *                              - jQuery $element Element that triggered the
  *                                 jsonapi call.
+ *                              - Event  $event   Event that triggered the
+ *                                 jsonapi call.
  *
  *  - success:                Runs when Ajax response has status of 'ok'.
  *                             Return value is ignored.
@@ -354,7 +356,7 @@
         }
       }
 
-      $(this).bind($trigger, function(  ) {
+      $(this).bind($trigger, function( $event ) {
         var $this = $(this);
 
         /* Call pre_execute hook.  Use return value to determine whether to
@@ -364,7 +366,7 @@
          *  $options.data() if pre_execute() returns false.
          */
         if( typeof($options.pre_execute) == 'function' ) {
-          if( $options.pre_execute($this) === false ) {
+          if( $options.pre_execute($this, $event) === false ) {
             if( typeof($options.post_execute) == 'function' ) {
               $options.post_execute($this, null, 'pre_execute');
             }
