@@ -168,21 +168,12 @@ class JsonApi_Actions extends sfActions
   {
     if( $failures instanceof sfValidatorErrorSchema )
     {
-      $this->addFailures($failures->getErrors());
+      $failures = $this->_convertErrorSchema($failures);
     }
-    else
+
+    foreach( (array) $failures as $key => $message )
     {
-      foreach( (array) $failures as $key => $message )
-      {
-        if( $message instanceof sfValidatorErrorSchema )
-        {
-          $this->addFailures($message);
-        }
-        else
-        {
-          $this->setFailure($key, (string) $message);
-        }
-      }
+      $this->setFailure($key, $message);
     }
 
     return $this;
@@ -270,6 +261,28 @@ class JsonApi_Actions extends sfActions
     }
 
     return $val;
+  }
+
+  /** Converts an sfValidatorErrorSchema into an array of error messages.
+   *
+   * @param sfValidatorErrorSchema $schema
+   *
+   * @return array
+   */
+  private function _convertErrorSchema( sfValidatorErrorSchema $schema )
+  {
+    $errors = array();
+
+    foreach( $schema->getErrors() as $key => $error )
+    {
+      $errors[$key] = (
+        ($error instanceof sfValidatorErrorSchema)
+          ? $this->_convertErrorSchema($error)
+          : (string) $error
+      );
+    }
+
+    return $errors;
   }
 
   /** Renders an array as a JSON string.
