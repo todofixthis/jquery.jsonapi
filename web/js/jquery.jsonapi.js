@@ -340,9 +340,6 @@
           case 'select':
           case 'textarea':
             $trigger = 'change';
-
-            $options.url =
-              ($options.url || $(this).parents('form:first').attr('action'));
           break;
 
           case 'input':
@@ -356,9 +353,6 @@
                 $trigger = 'click';
               break;
             }
-
-            $options.url =
-              ($options.url || $(this).parents('form:first').attr('action'));
           break;
 
           default:
@@ -366,6 +360,10 @@
           break;
         }
       }
+
+      /* Last-ditch effort to determine a default value for $options.url. */
+      $options.url =
+        ($options.url || $(this).parents('form:first').attr('action'));
 
       $(this).bind($trigger, function( $event ) {
         var $this = $(this);
