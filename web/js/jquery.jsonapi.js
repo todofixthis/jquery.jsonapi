@@ -26,8 +26,11 @@
  * @param Object $options
  *
  *  Standard Options:
- *  - url:                    URL to send Ajax request to.  This is the only
- *                             required option.
+ *  - url:                    URL to send Ajax request to.  If not specified,
+ *                             the action of the [parent] form will be used.
+ *
+ *                             For non-form-related elements, this option needs
+ *                             to be set explicitly.
  *
  *  Hooks:
  *  - pre_execute:            Runs immediately before sending the Ajax request.
@@ -35,7 +38,7 @@
  *                             that post_execute() will still be executed if
  *                             pre_execute() returns false (see below).
  *
- *                             Paremeters:
+ *                             Parameters:
  *                              - jQuery $element Element that triggered the
  *                                 jsonapi call.
  *                              - Event  $event   Event that triggered the
@@ -330,11 +333,16 @@
         {
           case 'form':
             $trigger = 'submit';
+
+            $options.url = ($options.url || $(this).attr('action'));
           break;
 
           case 'select':
           case 'textarea':
             $trigger = 'change';
+
+            $options.url =
+              ($options.url || $(this).parents('form:first').attr('action'));
           break;
 
           case 'input':
@@ -348,6 +356,9 @@
                 $trigger = 'click';
               break;
             }
+
+            $options.url =
+              ($options.url || $(this).parents('form:first').attr('action'));
           break;
 
           default:
