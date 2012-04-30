@@ -60,7 +60,7 @@ class JsonApi_Actions extends sfActions
    */
   protected function getParam( $key, $validators = array() )
   {
-    return $this->_validate(
+    return $this->validate(
       $key,
       $this->getRequest()->getParameter($key),
       $validators
@@ -244,7 +244,7 @@ class JsonApi_Actions extends sfActions
    *
    * @return mixed
    */
-  private function _validate( $key, $val, array $validators )
+  protected function validate( $key, $val, array $validators )
   {
     /* @var $validator sfValidatorBase */
     foreach( $validators as $validator )
