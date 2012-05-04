@@ -311,6 +311,7 @@ class JsonApi_Actions extends sfActions
     }
     else
     {
+      $this->getRequest()->setRequestFormat('js');
       $this->getResponse()->setContentType('application/json');
       return $this->renderText(json_encode($response));
     }
