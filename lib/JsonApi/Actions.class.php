@@ -39,16 +39,27 @@ class JsonApi_Actions extends sfActions
   const
     DEBUG = 'Debug';
 
+  /** Require the specified request method unless in dev mode.
+   *
+   * @param string $method
+   *
+   * @return void Automatically forwards to the 404 page if not valid.
+   */
+  protected function requireMethod( $method )
+  {
+    $this->forward404Unless(
+          ($this->getRequest()->getMethod() == $method)
+      or  (sfConfig::get('sf_environment')  == 'dev')
+    );
+  }
+
   /** Require POST or dev environment.
    *
    * @return void Automatically forwards to the 404 page if not valid.
    */
   protected function requirePost(  )
   {
-    $this->forward404Unless(
-          $this->getRequest()->getMethod() == sfWebRequest::POST
-      or  sfConfig::get('sf_environment') == 'dev'
-    );
+    $this->requireMethod(sfWebRequest::POST);
   }
 
   /** Get and validate a request parameter.
