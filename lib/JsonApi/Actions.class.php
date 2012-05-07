@@ -41,14 +41,18 @@ class JsonApi_Actions extends sfActions
 
   /** Require the specified request method unless in dev mode.
    *
-   * @param string $method
+   * @param string,... $method If multiple values are passed in, the request
+   *  must match at least one.
    *
    * @return void Automatically forwards to the 404 page if not valid.
    */
-  protected function requireMethod( $method )
+  protected function requireMethod(
+    /** @noinspection PhpUnusedParameterInspection */
+    $method /*, ... */
+  )
   {
     $this->forward404Unless(
-          ($this->getRequest()->getMethod() == $method)
+          in_array($this->getRequest()->getMethod(), func_get_args())
       or  (sfConfig::get('sf_environment')  == 'dev')
     );
   }
