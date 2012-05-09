@@ -381,31 +381,31 @@
         }
       }
 
-      /* URL could be different for each element in the selector.  Create local
-       *  variable to determine.
-       */
-      var $url = $options.url;
-      if( typeof($url) == 'function' ) {
-        $url = $options.url($this);
-      }
-
-      /* Last-ditch effort to determine a default value for $options.url. */
-      //noinspection EqualityComparisonWithCoercionJS
-      if( $url == '' ) {
-        switch( $tagName )
-        {
-          case 'form':
-            $url = $this.attr('action');
-            break;
-
-          default:
-            $url = $this.parents('form:first').attr('action');
-            break;
-        }
-      }
-
       $this.bind($trigger, function( $event ) {
         var $this = $(this);
+
+        /* URL could be different for each element in the selector.  Create
+         *  local variable to determine.
+         */
+        var $url = $options.url;
+        if( typeof($url) == 'function' ) {
+          $url = $options.url($this);
+        }
+
+        /* Last-ditch effort to determine a default value for $options.url. */
+        //noinspection EqualityComparisonWithCoercionJS
+        if( $url == '' ) {
+          switch( $tagName )
+          {
+            case 'form':
+              $url = $this.attr('action');
+              break;
+
+            default:
+              $url = $this.parents('form:first').attr('action');
+              break;
+          }
+        }
 
         /* Call pre_execute hook.  Use return value to determine whether to
          *  continue.
