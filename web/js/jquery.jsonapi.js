@@ -40,11 +40,16 @@
  *                             - jQuery $element Element that triggered the
  *                                jsonapi call.
  *
+ *                            If the function returns (bool) false, the Ajax
+ *                              request will not fire.  Note that post_execute()
+ *                              will still be executed if url() returns false
+ *                              (see below).
+ *
  *  Hooks:
  *  - pre_execute:            Runs immediately before sending the Ajax request.
- *                             Return false to cancel the Ajax request.  Note
- *                             that post_execute() will still be executed if
- *                             pre_execute() returns false (see below).
+ *                             Return (bool) false to cancel the Ajax request.
+ *                             Note that post_execute() will still be executed
+ *                             if pre_execute() returns false (see below).
  *
  *                             Parameters:
  *                              - jQuery $element Element that triggered the
@@ -102,6 +107,8 @@
  *                              - String      $from    Name of the method that
  *                                 invoked post_execute():
  *                                  - "pre_execute"
+ *                                  - "url"
+ *                                  - "data"
  *                                  - "success"
  *                                  - "failure"
  *                                  - "error"
@@ -127,6 +134,11 @@
  *                             Parameters:
  *                              - jQuery $element Element that triggered the
  *                                 jsonapi call.
+ *
+ *                             If the function returns (bool) false, the Ajax
+ *                              request will not fire.  Note that post_execute()
+ *                              will still be executed even if $data() returns
+ *                              false.
  *
  *                             Note that $data will not be evaluated if
  *                              pre_execute() returns false.
@@ -196,6 +208,21 @@
 
     var $data;
 
+    /** Executes the post-execute handler.
+     *
+     * @param $data Object
+     * @param $from String
+     *
+     * @return Boolean
+     */
+    function _postExecute( $data, $from ) {
+      if( typeof($options.post_execute) == 'function' ) {
+        $options.post_execute($data, $from);
+      }
+
+      return false;
+    }
+
     /** Handle an exception from the Ajax call.
      *
      * @param $err  Error
@@ -214,42 +241,42 @@
         $options.error($err, $data, $xhr);
       }
 
-      if( typeof($options.post_execute) == 'function' ) {
-        $options.post_execute($data, 'error');
-      }
-
-      return false;
+      return _postExecute($data, 'error');
     }
 
     try
     {
-      while( typeof($options.url) == 'function' ) {
-        $options.url = $options.url()
-      }
-
       /* Call pre_execute hook.  Use return value to determine whether to
        *  continue.
        */
       if( typeof($options.pre_execute) == 'function' ) {
         if( $options.pre_execute() === false ) {
-          if( typeof($options.post_execute) == 'function' ) {
-            $options.post_execute(null, 'pre_execute');
-          }
-
-          return false;
+          return _postExecute(null, 'pre_execute');
         }
       }
 
+      while( typeof($options.url) == 'function' ) {
+        $options.url = $options.url()
+      }
+
       /* The only value in $options that *must* have a value is url. */
-      //noinspection EqualityComparisonWithCoercionJS
-      if( $options.url == '' ) {
-        return _handleException('url option not set.');
+      if( $options.url === false ) {
+        return _postExecute(null, 'url');
+      } else {
+        //noinspection EqualityComparisonWithCoercionJS
+        if( $options.url == '' ) {
+          return _handleException('url option not set.');
+        }
       }
 
       if( typeof($options.data) == 'function' ) {
         $data = $options.data();
       } else {
         $data = ($options.data || {});
+      }
+
+      if( $data === false ) {
+        return _handleException(null, 'data');
       }
     }
     catch( $err ) {
@@ -271,9 +298,7 @@
               $options.success($res.detail, $data);
             }
 
-            if( typeof($options.post_execute) == 'function' ) {
-              $options.post_execute($data, 'success');
-            }
+            _postExecute($data, 'success');
           } else {
             //noinspection ExceptionCaughtLocallyJS
             throw new Error('Malformed success response from server.');
@@ -297,9 +322,7 @@
               $options.failure($res.detail, $data);
             }
 
-            if( typeof($options.post_execute) == 'function' ) {
-              $options.post_execute($data, 'failure');
-            }
+            _postExecute($data, 'failure');
           } else {
             //noinspection ExceptionCaughtLocallyJS
             throw new Error('Malformed error response from server.');
@@ -338,6 +361,21 @@
       },
       ($options || {})
     );
+
+    /** Executes the post-execute handler.
+     *
+     * @param $data Object
+     * @param $from String
+     *
+     * @return Boolean
+     */
+    function _postExecute( $data, $from ) {
+      if( typeof($options.post_execute) == 'function' ) {
+        $options.post_execute($(this), $data, $from);
+      }
+
+      return false;
+    }
 
     /* Could be called on multiple elements, and the default behavior will be
      *  slightly different depending on each element.
@@ -392,11 +430,7 @@
          */
         if( typeof($options.pre_execute) == 'function' ) {
           if( $options.pre_execute($this, $event) === false ) {
-            if( typeof($options.post_execute) == 'function' ) {
-              $options.post_execute($this, null, 'pre_execute');
-            }
-
-            return false;
+            return _postExecute(null, 'pre_execute');
           }
         }
 
@@ -409,8 +443,7 @@
         }
 
         /* Last-ditch effort to determine a default value for $options.url. */
-        //noinspection EqualityComparisonWithCoercionJS
-        if( ! $url ) {
+        if( (! $url) && ($url !== false) ) {
           if( $tagName == 'form' ) {
             $url = $this.attr('action');
           } else {
@@ -456,11 +489,7 @@
               }
             },
 
-            'post_execute': function( $data, $from ) {
-              if( typeof($options.post_execute) == 'function' ) {
-                return $options.post_execute($this, $data, $from);
-              }
-            }
+            'post_execute': _postExecute
           }
         ));
 
