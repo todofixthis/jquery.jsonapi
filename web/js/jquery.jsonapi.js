@@ -269,14 +269,13 @@
         }
       }
 
-      if( typeof($options.data) == 'function' ) {
-        $data = $options.data();
-      } else {
-        $data = ($options.data || {});
+      $data = $options.data;
+      while( typeof($data) == 'function' ) {
+        $data = $data();
       }
 
       if( $data === false ) {
-        return _handleException(null, 'data');
+        return _postExecute(null, 'data');
       }
     }
     catch( $err ) {
@@ -451,23 +450,28 @@
           }
         }
 
+        /* Same goes for the request data. */
+        var $data = $options.data;
+        while( typeof($data) == 'function' ) {
+          $data = $data($this);
+        }
+
+        if( ! $data ) {
+          if( $data === false ) {
+            return _postExecute(null, 'data');
+          } else if( $tagName == 'form' ) {
+            $data = $this.serialize();
+          } else {
+            $data = $this.parents('form:first').serialize();
+          }
+        }
+
         $.jsonapi($.extend(
           {},
           $options,
           {
             'url':          $url,
-
-            'data':         function(  ) {
-              if( typeof($options.data) == 'function' ) {
-                return $options.data($this);
-              } else if( $options.data ) {
-                return $options.data;
-              } else if( $tagName == 'form' ) {
-                return $this.serialize();
-              } else {
-                return $this.parents('form:first').serialize();
-              }
-            },
+            'data':         $data,
 
             'pre_execute':  null, // If it's defined, we already called it!
 
