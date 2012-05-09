@@ -395,15 +395,10 @@
         /* Last-ditch effort to determine a default value for $options.url. */
         //noinspection EqualityComparisonWithCoercionJS
         if( $url == '' ) {
-          switch( $tagName )
-          {
-            case 'form':
-              $url = $this.attr('action');
-              break;
-
-            default:
-              $url = $this.parents('form:first').attr('action');
-              break;
+          if( $tagName == 'form' ) {
+            $url = $this.attr('action');
+          } else {
+            $url = $this.parents('form:first').attr('action');
           }
         }
 
