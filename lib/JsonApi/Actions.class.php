@@ -37,7 +37,8 @@
 class JsonApi_Actions extends sfActions
 {
   const
-    DEBUG = 'Debug';
+    DEBUG             = 'Debug',
+    TPL_FORM_REQUIRED = '%form% is required.';
 
   /** Require the specified request method unless in dev mode.
    *
@@ -90,12 +91,18 @@ class JsonApi_Actions extends sfActions
    * @param sfForm  $form
    * @param bool    $validate If true, validate the form and add failure
    *  messages for any validation failures.  This will also generate a failure
-   *  message if the form could not be bound.
+   *  message if the form could not be bound to the request.
+   * @param string  $template Template for failure message if the form could not
+   *  be bound to the request.
    *
    * @throws LogicException If the form class does not have a parameter name.
    * @return sfForm $form
    */
-  protected function bindForm( sfForm $form, $validate = true )
+  protected function bindForm(
+    sfForm  $form,
+            $validate = true,
+            $template = self::TPL_FORM_REQUIRED
+  )
   {
     $request = $this->getRequest();
 
@@ -126,7 +133,7 @@ class JsonApi_Actions extends sfActions
       }
       else
       {
-        $this->setFailure($name, 'Required.');
+        $this->setFailure($name, strtr($template, array('%form%' => $name)));
       }
     }
 
