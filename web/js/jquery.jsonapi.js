@@ -223,7 +223,7 @@
 
     try
     {
-      if( typeof($options.url) == 'function' ) {
+      while( typeof($options.url) == 'function' ) {
         $options.url = $options.url()
       }
 
@@ -384,24 +384,6 @@
       $this.bind($trigger, function( $event ) {
         var $this = $(this);
 
-        /* URL could be different for each element in the selector.  Create
-         *  local variable to determine.
-         */
-        var $url = $options.url;
-        if( typeof($url) == 'function' ) {
-          $url = $options.url($this);
-        }
-
-        /* Last-ditch effort to determine a default value for $options.url. */
-        //noinspection EqualityComparisonWithCoercionJS
-        if( $url == '' ) {
-          if( $tagName == 'form' ) {
-            $url = $this.attr('action');
-          } else {
-            $url = $this.parents('form:first').attr('action');
-          }
-        }
-
         /* Call pre_execute hook.  Use return value to determine whether to
          *  continue.
          *
@@ -415,6 +397,24 @@
             }
 
             return false;
+          }
+        }
+
+        /* URL could be different for each element in the selector.  Create
+         *  local variable to determine.
+         */
+        var $url = $options.url;
+        while( typeof($url) == 'function' ) {
+          $url = $url($this);
+        }
+
+        /* Last-ditch effort to determine a default value for $options.url. */
+        //noinspection EqualityComparisonWithCoercionJS
+        if( ! $url ) {
+          if( $tagName == 'form' ) {
+            $url = $this.attr('action');
+          } else {
+            $url = $this.parents('form:first').attr('action');
           }
         }
 
