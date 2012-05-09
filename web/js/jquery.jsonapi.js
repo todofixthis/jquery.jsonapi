@@ -32,6 +32,14 @@
  *                             For non-form-related elements, this option needs
  *                             to be set explicitly.
  *
+ *                            This option can be a function that returns a URL.
+ *                             The function will be executed after the
+ *                             pre_execute() hook (see below).
+ *
+ *                            Parameters:
+ *                             - jQuery $element Element that triggered the
+ *                                jsonapi call.
+ *
  *  Hooks:
  *  - pre_execute:            Runs immediately before sending the Ajax request.
  *                             Return false to cancel the Ajax request.  Note
@@ -186,31 +194,7 @@
       ($options || {})
     );
 
-    /* The only value in $options that *must* have a value is url. */
-    //noinspection EqualityComparisonWithCoercionJS
-    if( $options.url == '' ) {
-      throw new Error('url option not set.');
-    }
-
-    /* Call pre_execute hook.  Use return value to determine whether to
-     *  continue.
-     */
-    if( typeof($options.pre_execute) == 'function' ) {
-      if( $options.pre_execute() === false ) {
-        if( typeof($options.post_execute) == 'function' ) {
-          $options.post_execute(null, 'pre_execute');
-        }
-
-        return false;
-      }
-    }
-
     var $data;
-    if( typeof($options.data) == 'function' ) {
-      $data = $options.data();
-    } else {
-      $data = ($options.data || {});
-    }
 
     /** Handle an exception from the Ajax call.
      *
@@ -233,6 +217,43 @@
       if( typeof($options.post_execute) == 'function' ) {
         $options.post_execute($data, 'error');
       }
+
+      return false;
+    }
+
+    try
+    {
+      if( typeof($options.url) == 'function' ) {
+        $options.url = $options.url()
+      }
+
+      /* Call pre_execute hook.  Use return value to determine whether to
+       *  continue.
+       */
+      if( typeof($options.pre_execute) == 'function' ) {
+        if( $options.pre_execute() === false ) {
+          if( typeof($options.post_execute) == 'function' ) {
+            $options.post_execute(null, 'pre_execute');
+          }
+
+          return false;
+        }
+      }
+
+      /* The only value in $options that *must* have a value is url. */
+      //noinspection EqualityComparisonWithCoercionJS
+      if( $options.url == '' ) {
+        return _handleException('url option not set.');
+      }
+
+      if( typeof($options.data) == 'function' ) {
+        $data = $options.data();
+      } else {
+        $data = ($options.data || {});
+      }
+    }
+    catch( $err ) {
+      return _handleException($err);
     }
 
     //noinspection JSUnusedLocalSymbols
@@ -322,7 +343,8 @@
      *  slightly different depending on each element.
      */
     $(this).each(function(  ) {
-      var $tagName = String(this.tagName).toLowerCase();
+      var $this     = $(this);
+      var $tagName  = String(this.tagName).toLowerCase();
 
       var $trigger;
       if( $options.trigger ) {
@@ -333,8 +355,6 @@
         {
           case 'form':
             $trigger = 'submit';
-
-            $options.url = ($options.url || $(this).attr('action'));
           break;
 
           case 'select':
@@ -343,7 +363,7 @@
           break;
 
           case 'input':
-            switch( $(this).attr('type') ) {
+            switch( $this.attr('type') ) {
               case 'text':
               case 'password':
                 $trigger = 'change';
@@ -361,11 +381,30 @@
         }
       }
 
-      /* Last-ditch effort to determine a default value for $options.url. */
-      $options.url =
-        ($options.url || $(this).parents('form:first').attr('action'));
+      /* URL could be different for each element in the selector.  Create local
+       *  variable to determine.
+       */
+      var $url = $options.url;
+      if( typeof($url) == 'function' ) {
+        $url = $options.url($this);
+      }
 
-      $(this).bind($trigger, function( $event ) {
+      /* Last-ditch effort to determine a default value for $options.url. */
+      //noinspection EqualityComparisonWithCoercionJS
+      if( $url == '' ) {
+        switch( $tagName )
+        {
+          case 'form':
+            $url = $this.attr('action');
+            break;
+
+          default:
+            $url = $this.parents('form:first').attr('action');
+            break;
+        }
+      }
+
+      $this.bind($trigger, function( $event ) {
         var $this = $(this);
 
         /* Call pre_execute hook.  Use return value to determine whether to
@@ -388,7 +427,9 @@
           {},
           $options,
           {
-            'data': function(  ) {
+            'url':          $url,
+
+            'data':         function(  ) {
               if( typeof($options.data) == 'function' ) {
                 return $options.data($this);
               } else if( $options.data ) {
@@ -400,21 +441,21 @@
               }
             },
 
-            'pre_execute': null, // If it's defined, we already called it!
+            'pre_execute':  null, // If it's defined, we already called it!
 
-            'success': function( $res, $data ) {
+            'success':      function( $res, $data ) {
               if( typeof($options.success) == 'function' ) {
                 return $options.success($res, $this, $data);
               }
             },
 
-            'failure': function( $res, $data ) {
+            'failure':      function( $res, $data ) {
               if( typeof($options.failure) == 'function' ) {
                 return $options.failure($res, $this, $data);
               }
             },
 
-            'error': function( $err, $data, $xhr ) {
+            'error':        function( $err, $data, $xhr ) {
               if( typeof($options.error) == 'function' ) {
                 return $options.error($err, $this, $data, $xhr);
               }
