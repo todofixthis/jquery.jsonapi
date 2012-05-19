@@ -45,7 +45,7 @@ class JsonApi_Actions extends sfActions
    * @param string,... $method If multiple values are passed in, the request
    *  must match at least one.
    *
-   * @return void Automatically forwards to the 404 page if not valid.
+   * @return void Automatically forwards to the 404 action if not valid.
    */
   protected function requireMethod(
     /** @noinspection PhpUnusedParameterInspection */
@@ -60,11 +60,20 @@ class JsonApi_Actions extends sfActions
 
   /** Require POST or dev environment.
    *
-   * @return void Automatically forwards to the 404 page if not valid.
+   * @return void Automatically forwards to the 404 action if not valid.
    */
   protected function requirePost(  )
   {
     $this->requireMethod(sfWebRequest::POST);
+  }
+
+  /** Requires PUT or dev environment.
+   *
+   * @return void Automatically forwards to the 404 action if not valid.
+   */
+  protected function requirePut(  )
+  {
+    $this->requireMethod(sfWebRequest::PUT);
   }
 
   /** Get and validate a request parameter.
