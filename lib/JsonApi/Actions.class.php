@@ -78,18 +78,21 @@ class JsonApi_Actions extends sfActions
 
   /** Get and validate a request parameter.
    *
-   * @param string    $key
-   * @param array     $validators
+   * @param $key        string
+   * @param $validators sfValidatorBase[]
+   * @param $default    mixed
    *
    * @return mixed
    */
-  protected function getParam( $key, $validators = array() )
+  protected function getParam( $key, $validators = array(), $default = null )
   {
-    return $this->validate(
-      $key,
-      $this->getRequest()->getParameter($key),
-      $validators
+    $value = $this->validate(
+        $key
+      , $this->getRequest()->getParameter($key)
+      , $validators
     );
+
+    return ($value ? $value : $default);
   }
 
   /** Attempts to bind a form object to the request.
