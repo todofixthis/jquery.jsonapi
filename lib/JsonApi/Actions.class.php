@@ -53,8 +53,8 @@ class JsonApi_Actions extends sfActions
   )
   {
     $this->forward404Unless(
-          in_array($this->getRequest()->getMethod(), func_get_args())
-      or  (sfConfig::get('sf_environment')  == 'dev')
+          $this->isDevMode()
+      or  in_array($this->getRequest()->getMethod(), func_get_args())
     );
   }
 
@@ -292,6 +292,15 @@ class JsonApi_Actions extends sfActions
     }
 
     return $val;
+  }
+
+  /** Returns whether we are in dev mode (environment).
+   *
+   * @return bool
+   */
+  protected function isDevMode(  )
+  {
+    return (sfConfig::get('sf_environment')  == 'dev');
   }
 
   /** Converts an sfValidatorErrorSchema into an array of error messages.
