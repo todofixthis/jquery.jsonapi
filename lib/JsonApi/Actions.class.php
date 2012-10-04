@@ -361,7 +361,16 @@ class JsonApi_Actions extends sfActions
     {
       $this->getRequest()->setRequestFormat('js');
       $this->getResponse()->setContentType('application/json');
-      return $this->renderText(json_encode($response));
+
+      $json     = json_encode($response);
+      $callback = $this->getRequest()->getParameter('callback');
+
+      /* Render text a little differently for JSONP requests. */
+      return $this->renderText(
+        $callback
+          ? sprintf('%s(%s);', $callback, $json)
+          : $json
+      );
     }
   }
 }
