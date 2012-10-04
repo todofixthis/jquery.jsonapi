@@ -308,9 +308,17 @@
 
       success:  function( $res, $status, $xhr ) {
         try {
-          if( typeof($res.status) != 'undefined' && $res.status == 'ok' ) {
-            if( typeof($options.success) == 'function' ) {
-              $options.success($res.detail, $data);
+          if( typeof($res.status) != 'undefined' ) {
+            if( $res.status == 'ok' ) {
+              if( typeof($options.success) == 'function' ) {
+                $options.success($res.detail, $data);
+              }
+            }
+            /* Allow 200 failures if the request uses JSONP. */
+            else if( $res.status == 'fail' ) {
+              if( typeof($options.failure) == 'function' ) {
+                $options.failure($res.detail, $data);
+              }
             }
 
             _postExecute($data, 'success');

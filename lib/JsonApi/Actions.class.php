@@ -260,7 +260,12 @@ class JsonApi_Actions extends sfActions
       $this->addFailures($failures);
     }
 
-    $this->getResponse()->setStatusCode(400);
+    /* @kludge JSONP requests will only work if the response has 200 status. */
+    $this->getResponse()->setStatusCode(
+      $this->getRequest()->hasParameter('callback')
+        ? 200
+        : 400
+    );
 
     return $this->_renderJson(array(
       JsonApi_Response::KEY_STATUS  => JsonApi_Response::STATUS_FAIL,
