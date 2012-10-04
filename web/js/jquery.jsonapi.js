@@ -143,7 +143,11 @@
  *                             Note that $data will not be evaluated if
  *                              pre_execute() returns false.
  *
- *  - method:                 HTTP request method.  Default is 'post'.
+ *  - jsonp:                  Whether to send the request using JSONP.  Default
+ *                              is null (auto-detect).
+ *
+ *  - method:                 HTTP request method.  Default is 'post' (or auto-
+ *                              detected if the element is a form).
  *
  *  - return:                 Return value after event handler fires.  Default
  *                             is false to prevent default event handler from
@@ -201,6 +205,7 @@
         /* Advanced Options */
         'async':                  true,
         'method':                 'post',
+        'jsonp':                  null,
         'data':                   null
       },
       ($options || {})
@@ -282,13 +287,24 @@
       return _handleException($err);
     }
 
+    if( ! ($options.jsonp || ($options.jsonp === false)) )
+    {
+      /* Check to see if we should use jsonp (for cross-domain request). */
+      var $target = $(document.createElement('a'))
+        .attr('href', $options.url)
+        .get(0)
+        .hostname;
+
+      $options.jsonp = ($target !== location.hostname);
+    }
+
     //noinspection JSUnusedLocalSymbols
     $.ajax({
       async:    $options.async,
       type:     $options.method,
       url:      $options.url,
       data:     $data,
-      dataType: 'json',
+      dataType: ($options.jsonp ? 'jsonp' : 'json'),
 
       success:  function( $res, $status, $xhr ) {
         try {
@@ -354,7 +370,7 @@
         /* Advanced Options */
         'trigger':                '',
         'async':                  true,
-        'method':                 'post',
+        'method':                 null,
         'data':                   null,
         'return':                 false
       },
@@ -450,6 +466,19 @@
           }
         }
 
+        /* Double-check to see if we know how we are sending the data. */
+        var $method = $options.method;
+        if( (! $method) && ($tagName === 'form') )
+        {
+          $method = $this.attr('method');
+        }
+
+        /* Post by default. */
+        if( ! $method )
+        {
+          $method = 'post';
+        }
+
         /* Same goes for the request data. */
         var $data = $options.data;
         while( typeof($data) == 'function' ) {
@@ -472,6 +501,7 @@
           {
             'url':          $url,
             'data':         $data,
+            'method':       $method,
 
             'pre_execute':  null, // If it's defined, we already called it!
 
