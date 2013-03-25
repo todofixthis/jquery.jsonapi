@@ -363,13 +363,13 @@ Here is an example of how to use the `jsonapi` jQuery plugin to implement a
 
         /* Event handler triggered before ajax request fires. */
         'pre_execute': function(  ) {
-          $('ajax-loader').show();
+          $('#ajax-loader').show();
           $('#like-errors').clear();
         },
 
         /* Event handler triggered after response is processed. */
         'post_execute': function(  ) {
-          $('ajax-loader').hide();
+          $('#ajax-loader').hide();
         },
 
         /* Event handler triggered when receiving a success response. */
