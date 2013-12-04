@@ -109,6 +109,7 @@
  *                                  - "pre_execute"
  *                                  - "url"
  *                                  - "data"
+ *                                  - "cached"
  *                                  - "success"
  *                                  - "failure"
  *                                  - "error"
@@ -116,6 +117,34 @@
  *  Advanced Options:
  *  - async:                  If true (default), the Ajax request will be
  *                             asynchronous.
+ *
+ *  - cache_key:              Specifies the key to use when determining whether
+ *                             to make an ajax request or use locally-cached
+ *                             response data.
+ *
+ *                             You can pass a function here; it will be
+ *                              evaluated immediately before sending the Ajax
+ *                              request and should return a string or (bool)
+ *                              false.
+ *
+ *                             Parameters:
+ *                              - String $url   The request URL.
+ *                              - Object $data  The request data.
+ *
+ *                             If the function returns (bool) false, the
+ *                              response data will not be cached.
+ *
+ *                             Note that by default, responses are NOT cached.
+ *                              If you want to use caching, you MUST specify a
+ *                              function for this option.
+ *
+ *                             Note also that only success responses are cached;
+ *                              failure responses are never cached.
+ *
+ *  - cached:                 Runs when using a cached response instead of
+ *                             making an ajax call (see `cache_key` above).
+ *
+ *                            By default, this just invokes the success() hook.
  *
  *  - data:                   Data to send with the HTTP request, specified as
  *                             a key/value object, query string or function that
@@ -184,6 +213,9 @@
  * @subpackage web
  */
 (function( $ ) {
+  /** Caches response data locally.  See `cache_key` documentation above. */
+  var cache = {};
+
   /** $.jsonapi() for making an ad-hoc JsonApi request.
    *
    * Also leveraged by $.fn.jsonapi() below.
@@ -204,9 +236,11 @@
 
         /* Advanced Options */
         'async':                  true,
-        'method':                 'post',
+        'cache_key':              false,
+        'cached':                 null,
+        'data':                   null,
         'jsonp':                  null,
-        'data':                   null
+        'method':                 'post'
       },
       ($options || {})
     );
@@ -218,14 +252,12 @@
      * @param $data Object
      * @param $from String
      *
-     * @return Boolean
+     * @return void
      */
     function _postExecute( $data, $from ) {
       if( typeof($options.post_execute) == 'function' ) {
         $options.post_execute($data, $from);
       }
-
-      return false;
     }
 
     /** Handle an exception from the Ajax call.
@@ -233,7 +265,7 @@
      * @param $err  Error
      * @param $xhr  XMLHttpRequest
      *
-     * @return void
+     * @return Boolean
      */
     function _handleException( $err, $xhr ) {
       if( typeof($options.error) == 'function' ) {
@@ -246,7 +278,7 @@
         $options.error($err, $data, $xhr);
       }
 
-      return _postExecute($data, 'error');
+      _postExecute($data, 'error');
     }
 
     try
@@ -270,7 +302,7 @@
       } else {
         //noinspection EqualityComparisonWithCoercionJS
         if( $options.url == '' ) {
-          return _handleException('url option not set.');
+          return _handleException('url option not set.', null);
         }
       }
 
@@ -284,18 +316,48 @@
       }
     }
     catch( $err ) {
-      return _handleException($err);
+      return _handleException($err, null);
     }
 
     if( ! ($options.jsonp || ($options.jsonp === false)) )
     {
       /* Check to see if we should use jsonp (for cross-domain request). */
       var $target = $(document.createElement('a'))
-        .attr('href', $options.url)
+        .prop('href', $options.url)
         .get(0)
         .hostname;
 
       $options.jsonp = ($target !== location.hostname);
+    }
+
+    /* Check to see if we are using the cache. */
+    var cache_key = null;
+    if( typeof($options.cache_key) == 'function' ) {
+        cache_key = $options.cache_key($options.url, $data);
+    }
+
+    /* Check for cache hit. */
+    if( cache_key && cache.hasOwnProperty(cache_key) ) {
+      try {
+        /* Prefer the 'cached' handler, but fall back on 'success'. */
+        if( typeof($options.cached) == 'function' ) {
+            $options.cached(cache[cache_key], $data);
+        } else if( typeof($options.success) == 'function' ) {
+            $options.success(cache[cache_key], $data);
+        }
+
+        /* Else raise exception?  This would be a pretty weird case.
+         *
+         *  Ehhhh, we'll assume the developer knows what he's doing.  That's
+         *      usually a safe assumption.
+         *
+         *  Usually.
+         */
+
+        return _postExecute($data, 'cached');
+      } catch( $err ) {
+        return _handleException($err, null);
+      }
     }
 
     //noinspection JSUnusedLocalSymbols
@@ -312,6 +374,11 @@
             if( $res.status == 'ok' ) {
               if( typeof($options.success) == 'function' ) {
                 $options.success($res.detail, $data);
+              }
+
+              /* If we are caching, store the result in the local cache. */
+              if( cache_key ) {
+                  cache[cache_key] = $res.detail;
               }
             }
             /* Allow 200 failures if the request uses JSONP. */
@@ -376,11 +443,13 @@
         'post_execute':           null,
 
         /* Advanced Options */
-        'trigger':                '',
         'async':                  true,
-        'method':                 null,
+        'cache_key':              false,
+        'cached':                 null,
         'data':                   null,
-        'return':                 false
+        'method':                 null,
+        'return':                 false,
+        'trigger':                ''
       },
       ($options || {})
     );
@@ -390,14 +459,12 @@
      * @param $data Object
      * @param $from String
      *
-     * @return Boolean
+     * @return void
      */
     function _postExecute( $data, $from ) {
       if( typeof($options.post_execute) == 'function' ) {
         $options.post_execute($(this), $data, $from);
       }
-
-      return false;
     }
 
     /* Could be called on multiple elements, and the default behavior will be
@@ -424,7 +491,7 @@
           break;
 
           case 'input':
-            switch( $this.attr('type') ) {
+            switch( $this.prop('type') ) {
               case 'text':
               case 'password':
                 $trigger = 'change';
@@ -442,7 +509,7 @@
         }
       }
 
-      $this.bind($trigger, function( $event ) {
+      $this.on($trigger, function( $event ) {
         var $this = $(this);
 
         /* Call pre_execute hook.  Use return value to determine whether to
@@ -453,7 +520,8 @@
          */
         if( typeof($options.pre_execute) == 'function' ) {
           if( $options.pre_execute($this, $event) === false ) {
-            return _postExecute(null, 'pre_execute');
+            _postExecute(null, 'pre_execute');
+            return $options.return;
           }
         }
 
@@ -468,9 +536,12 @@
         /* Last-ditch effort to determine a default value for $options.url. */
         if( (! $url) && ($url !== false) ) {
           if( $tagName == 'form' ) {
-            $url = $this.attr('action');
+            $url = $this.prop('action');
+          }
+          else if( $tagName == 'a' ) {
+            $url = $this.prop('href');
           } else {
-            $url = $this.parents('form:first').attr('action');
+            $url = $this.parents('form:first').prop('action');
           }
         }
 
@@ -478,7 +549,7 @@
         var $method = $options.method;
         if( (! $method) && ($tagName === 'form') )
         {
-          $method = $this.attr('method');
+          $method = $this.prop('method');
         }
 
         /* Post by default. */
@@ -531,7 +602,10 @@
               }
             },
 
-            'post_execute': _postExecute
+            'post_execute': _postExecute,
+
+            'cache_key':    $options.cache_key,
+            'cached':       $options.cached
           }
         ));
 
