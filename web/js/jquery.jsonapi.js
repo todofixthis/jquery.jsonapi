@@ -94,7 +94,7 @@
  *
  *                             Note that post_execute() ALWAYS runs, regardless
  *                              of whether the result of the Ajax call was
- *                              success(), error() or exception(), or if
+ *                              success(), failure() or error(), or if
  *                              pre_execute() returned false to prevent the Ajax
  *                              call from firing.
  *
