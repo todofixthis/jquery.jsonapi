@@ -398,8 +398,14 @@
         }
       },
 
-      error:    function( $xhr, $status ) {
+      error:    function( $xhr, $status, $exc ) {
         try {
+          if($.inArray($xhr.status, [200, 400]) === -1) {
+            throw new Error(
+              'XmlHttpRequest received ' + $xhr.status + ' response from server (jQuery says: ' + $status + ').'
+            );
+          }
+
           var $res = $.parseJSON($xhr.responseText);
 
           if( ! $res ) {
@@ -454,19 +460,6 @@
       ($options || {})
     );
 
-    /** Executes the post-execute handler.
-     *
-     * @param $data Object
-     * @param $from String
-     *
-     * @return void
-     */
-    function _postExecute( $data, $from ) {
-      if( typeof($options.post_execute) == 'function' ) {
-        $options.post_execute($(this), $data, $from);
-      }
-    }
-
     /* Could be called on multiple elements, and the default behavior will be
      *  slightly different depending on each element.
      */
@@ -510,8 +503,6 @@
       }
 
       $this.on($trigger, function( $event ) {
-        var $this = $(this);
-
         /* Call pre_execute hook.  Use return value to determine whether to
          *  continue.
          *
@@ -602,7 +593,11 @@
               }
             },
 
-            'post_execute': _postExecute,
+            'post_execute': function( $data, $from ) {
+              if( typeof($options.post_execute) == 'function' ) {
+                $options.post_execute($this, $data, $from);
+              }
+            },
 
             'cache_key':    $options.cache_key,
             'cached':       $options.cached
