@@ -118,6 +118,9 @@
  *  - async:                  If true (default), the Ajax request will be
  *                             asynchronous.
  *
+ *                             Note that synchronous ajax (sjax?) on the main
+ *                              thread is not allowed in modern browsers.
+ *
  *  - cache_key:              Specifies the key to use when determining whether
  *                             to make an ajax request or use locally-cached
  *                             response data.
@@ -191,6 +194,12 @@
  *                              functionality in post_execute before relying on
  *                              this option.
  *
+ * - traditional:            Set this to true if you wish to use the traditional
+ *                              style of param serialization.
+ *
+ *                              See http://api.jquery.com/jQuery.param/ for more
+ *                                info.
+ *
  * - trigger:                Specify the event to listen for.
  *                             Defaults:
  *                              - forms:            'submit'
@@ -240,7 +249,8 @@
         'cached':                 null,
         'data':                   null,
         'jsonp':                  null,
-        'method':                 'post'
+        'method':                 'post',
+        'traditional':            false
       },
       ($options || {})
     );
@@ -362,13 +372,14 @@
 
     //noinspection JSUnusedLocalSymbols
     $.ajax({
-      async:    $options.async,
-      type:     $options.method,
-      url:      $options.url,
-      data:     $data,
-      dataType: ($options.jsonp ? 'jsonp' : 'json'),
+      'async':        $options.async,
+      'type':         $options.method,
+      'url':          $options.url,
+      'data':         $data,
+      'dataType':     ($options.jsonp ? 'jsonp' : 'json'),
+      'traditional':  $options.traditional,
 
-      success:  function( $res, $status, $xhr ) {
+      'success':  function( $res, $status, $xhr ) {
         try {
           if( typeof($res.status) != 'undefined' ) {
             if( $res.status == 'ok' ) {
@@ -398,7 +409,7 @@
         }
       },
 
-      error:    function( $xhr, $status, $exc ) {
+      'error':    function( $xhr, $status, $exc ) {
         try {
           if($.inArray($xhr.status, [200, 400]) === -1) {
             throw new Error(
@@ -455,10 +466,24 @@
         'data':                   null,
         'method':                 null,
         'return':                 false,
+        'traditional':            false,
         'trigger':                ''
       },
       ($options || {})
     );
+
+    /** Executes the post-execute handler.
+     *
+     * @param $data Object
+     * @param $from String
+     *
+     * @return void
+     */
+    function _postExecute( $data, $from ) {
+      if( typeof($options.post_execute) == 'function' ) {
+        $options.post_execute($data, $from);
+      }
+    }
 
     /* Could be called on multiple elements, and the default behavior will be
      *  slightly different depending on each element.
@@ -572,6 +597,7 @@
             'url':          $url,
             'data':         $data,
             'method':       $method,
+            'traditional':  $options.traditional,
 
             'pre_execute':  null, // If it's defined, we already called it!
 
