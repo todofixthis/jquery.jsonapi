@@ -46,7 +46,7 @@
  *                              (see below).
  *
  *  Hooks:
- *  - pre_execute:            Runs immediately before sending the Ajax request.
+ *  - pre_execute:            Runs as soon as the plugin is triggered.
  *                             Return (bool) false to cancel the Ajax request.
  *                             Note that post_execute() will still be executed
  *                             if pre_execute() returns false (see below).
@@ -56,6 +56,11 @@
  *                                 jsonapi call.
  *                              - Event  $event   Event that triggered the
  *                                 jsonapi call.
+ *
+ *  - before_send:            Runs immediately before sending the ajax request.
+ *                              This method has the same signature and purpose
+ *                              as jQuery's `beforeSend` handler.
+ *                            @see http://api.jquery.com/Ajax_Events/
  *
  *  - success:                Runs when Ajax response has status of 'ok'.
  *                             Return value is ignored.
@@ -238,6 +243,7 @@
 
         /* Hooks */
         'pre_execute':            null,
+        'before_send':            null,
         'success':                null,
         'failure':                null,
         'error':                  null,
@@ -378,6 +384,7 @@
       'data':         $data,
       'dataType':     ($options.jsonp ? 'jsonp' : 'json'),
       'traditional':  $options.traditional,
+      'beforeSend':   $options.before_send,
 
       'success':  function( $res, $status, $xhr ) {
         try {
@@ -412,6 +419,7 @@
       'error':    function( $xhr, $status, $exc ) {
         try {
           if($.inArray($xhr.status, [200, 400]) === -1) {
+            //noinspection ExceptionCaughtLocallyJS
             throw new Error(
               'XmlHttpRequest received ' + $xhr.status + ' response from server (jQuery says: ' + $status + ').'
             );
@@ -454,6 +462,7 @@
 
         /* Hooks */
         'pre_execute':            null,
+        'before_send':            null,
         'success':                null,
         'failure':                null,
         'error':                  null,
