@@ -381,10 +381,14 @@
       'async':        $options.async,
       'type':         $options.method,
       'url':          $options.url,
+
       'data':         $data,
       'dataType':     ($options.jsonp ? 'jsonp' : 'json'),
       'traditional':  $options.traditional,
       'beforeSend':   $options.before_send,
+
+      // https://bugs.jquery.com/ticket/12326
+      'contentType':  'application/json',
 
       'success':  function( $res, $status, $xhr ) {
         try {
